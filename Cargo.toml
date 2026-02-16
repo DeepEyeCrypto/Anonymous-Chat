@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "rust/libsignal-ffi",
+    "rust/kademlia-dht",
+    "rust/tor-client",
+    "rust/mesh-protocol"
+]
+resolver = "2"
