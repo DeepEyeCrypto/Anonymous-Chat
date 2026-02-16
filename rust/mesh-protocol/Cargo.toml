@@ -1,0 +1,19 @@
+[package]
+name = "mesh-protocol"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+android_logger = "0.13.3"
+btleplug = "0.11.2"
+jni = "0.21.1"
+log = "0.4.26"
+ndk-context = "0.1.1"
+tokio = { version = "1.49.0", features = ["full"] }
+
+[target.'cfg(target_os = "android")'.dependencies]
+ndk-context = "0.1.1"
+# btleplug needs no special handling here if included in main deps, but sometimes good to be explicit.

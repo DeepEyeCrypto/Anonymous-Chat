@@ -1,0 +1,12 @@
+/Users/enayat/Documents/Anonymous Chat/target/debug/deps/core2-0ff09ed6a787089b.d: /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/lib.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/error.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/mod.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/cursor.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/error.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/impls.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/traits.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/util.rs
+
+/Users/enayat/Documents/Anonymous Chat/target/debug/deps/libcore2-0ff09ed6a787089b.rmeta: /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/lib.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/error.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/mod.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/cursor.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/error.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/impls.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/traits.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/util.rs
+
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/lib.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/error.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/mod.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/cursor.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/error.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/impls.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/traits.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core2-0.4.0/src/io/util.rs:

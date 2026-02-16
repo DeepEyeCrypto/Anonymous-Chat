@@ -1,0 +1,12 @@
+/Users/enayat/Documents/Anonymous Chat/target/debug/deps/notify-9eee2baa3a3d19a6.d: /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/lib.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/kqueue.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/null.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/poll.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/config.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/error.rs
+
+/Users/enayat/Documents/Anonymous Chat/target/debug/deps/libnotify-9eee2baa3a3d19a6.rlib: /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/lib.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/kqueue.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/null.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/poll.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/config.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/error.rs
+
+/Users/enayat/Documents/Anonymous Chat/target/debug/deps/libnotify-9eee2baa3a3d19a6.rmeta: /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/lib.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/kqueue.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/null.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/poll.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/config.rs /Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/error.rs
+
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/lib.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/kqueue.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/null.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/poll.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/config.rs:
+/Users/enayat/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-8.2.0/src/error.rs:

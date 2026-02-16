@@ -1,39 +1,38 @@
 # PHANTOM NET: Decentralized Secure Messenger
 
-**Mission**: Build a fully decentralized, censorship-resistant, end-to-end encrypted messenger combining ProtonMail's zero-knowledge architecture, Tor's onion routing, Signal Protocol, and P2P mesh networking.
+**Mission**: Build a fully decentralized, censorship-resistant, end-to-end encrypted messenger.
 
 ## 🎯 Core Objectives
-1.  **Zero-Server Dependency**: DHT-based peer discovery. No central authority.
-2.  **Military-Grade Encryption**: Signal Protocol (Double Ratchet + X3DH) + OpenPGP.
-3.  **Censorship Resistance**: Tor onion routing + multi-transport support (I2P, Mesh).
-4.  **Bulletproof Security**: Perfect Forward Secrecy (PFS) + Post-Compromise Security (PCS).
+
+1. **Zero-Server Dependency**: DHT-based peer discovery.
+2. **Military-Grade Encryption**: Signal Protocol.
+3. **Censorship Resistance**: Tor onion routing (Arti).
 
 ## 🏗️ Architecture Overview
 
-The system is built on a hybrid architecture:
+* **Layer 1**: Tor (Online), DHT-P2P (Fallback), Mesh (Offline).
+* **Layer 2**: Custom Kademlia DHT.
+* **Layer 3**: Signal Protocol E2EE.
 
-*   **Layer 1: Transport Abstraction**: Tor (Online), DHT-P2P (Fallback), Mesh (Offline/Bluetooth/WiFi).
-*   **Layer 2: Peer Discovery**: Custom Kademlia DHT.
-*   **Layer 3: E2EE**: Signal Protocol (libsignal-rust) + Sealed Sender.
-*   **Layer 4: Onion Routing**: Tor Hidden Services Integration.
-*   **Layer 5: Offline Mesh**: Briar-style store-and-forward DTN.
+## 🚀 Roadmap
 
-## 📦 Project Structure
+- [x] **Phase 1: Orchestra**: Project Structure & Build System.
+* [x] **Phase 2: Layout**: Android UI (Jetpack Compose).
+* [x] **Phase 3: Logic**:
+  * [x] Signal Protocol FFI (Rust -> Kotlin).
+  * [x] Kademlia DHT Node (Rust -> Kotlin).
+  * [x] E2EE Loopback Simulation.
+* [x] **Phase 4: Network**:
+  * [x] **Bootstrap**: Private Go Rendezvous Server.
+  * [x] **Discovery**: DHT Auto-Bootstrap & Announcement.
+  * [x] **Anonymity**: Tor Client (Arti) Integration.
+  * [ ] **Routing**: Tunneling DHT over Tor.
 
-```
-phantom-net/
-├── android/               # Android App (Kotlin + Jetpack Compose)
-├── rust/                  # Core Logic (Signal, DHT, Tor in Rust)
-├── bootstrap/             # Lightweight Bootstrap Node (Go)
-├── docs/                  # Architecture & Protocol Specs
-└── scripts/               # Dev & Build Scripts
-```
+## 💻 Developer Setup
 
-## 🚀 Roadmap (MVP v0.1)
-- [ ] 1:1 Messaging via DHT-P2P
-- [ ] Signal Protocol E2EE (X3DH + Double Ratchet)
-- [ ] Contact Exchange via QR Code
-- [ ] Local Encrypted Storage (SQLCipher)
-- [ ] Basic DHT Implementation
+1. **Rust**: Install & `cargo build`.
+2. **Android**: `export ANDROID_NDK_HOME=...` & `./scripts/build_android_core.sh`.
+3. **Bootstrap**: `cd bootstrap && docker build -t bootstrap . && docker run -p 3000:3000 bootstrap`
+4. **Run**: `./gradlew installDebug`.
 
-_Powered by Antigravity & User Collaboration_
+_Powered by Antigravity_
