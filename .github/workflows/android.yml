@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -21,6 +22,12 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Set up NDK
+        id: setup-ndk
+        uses: nndixon/setup-ndk@v1
+        with:
+          ndk-version: r25c
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -33,7 +40,6 @@ jobs:
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: ./scripts/build_android_core.sh
-        continue-on-error: true # Might need specific NDK setup
 
       - name: Build Android App
         run: |
