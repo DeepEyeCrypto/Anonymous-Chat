@@ -1,0 +1,26 @@
+# Rust
+/target
+/Cargo.lock
+
+# Android
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+*/build
+*.iml
+*.ap_
+*.apk
+*.dex
+
+# JNI LIBS (Generated)
+android/app/src/main/jniLibs
+
+# OS
+.DS_Store

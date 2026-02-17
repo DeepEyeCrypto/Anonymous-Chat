@@ -5,6 +5,7 @@ import android.util.Log
 import com.phantomnet.app.domain.NetworkStatus
 import com.phantomnet.core.network.DhtService
 import com.phantomnet.core.network.TorService
+import com.phantomnet.core.network.MeshService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ class PhantomApp : Application() {
                 System.loadLibrary("libsignal_ffi")
                 System.loadLibrary("kademlia_dht")
                 System.loadLibrary("tor_client")
+                System.loadLibrary("mesh_protocol")
             } catch (e: UnsatisfiedLinkError) {
                 Log.e(TAG, "Failed to load native libraries", e)
             }
@@ -58,6 +60,17 @@ class PhantomApp : Application() {
             } catch (e: Exception) {
                 NetworkStatus.updateDhtStatus("Failed: ${e.message}")
                 Log.e(TAG, "Failed to start DHT Node", e)
+            }
+            
+            // 3. Start Mesh (Stub/Simulation for now)
+            try {
+                NetworkStatus.updateMeshStatus("Scanning...")
+                val status = MeshService.startMesh()
+                NetworkStatus.updateMeshStatus(status)
+                Log.i(TAG, "Mesh Status: $status")
+            } catch (e: Exception) {
+                NetworkStatus.updateMeshStatus("Failed: ${e.message}")
+                Log.e(TAG, "Failed to start Mesh Service", e)
             }
         }
     }

@@ -26,6 +26,7 @@
   * [x] **Bootstrap**: Private Go Rendezvous Server.
   * [x] **Discovery**: DHT Auto-Bootstrap & Announcement.
   * [x] **Anonymity**: Tor Client (Arti) Integration.
+  * [x] **Mesh**: Bluetooth LE Scanning (Stub/Simulation for MVP).
   * [ ] **Routing**: Tunneling DHT over Tor.
 
 ## 💻 Developer Setup

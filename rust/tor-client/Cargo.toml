@@ -1,21 +1,16 @@
 [package]
 name = "tor-client"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
 anyhow = "1.0.86"
-arti-client = { version = "0.22.0", features = ["tokio", "rustls"] } # Downgrading for stability or checking version compatibility
+arti-client = { version = "0.22.0", features = ["tokio", "rustls"] }
 jni = "0.21.1"
 tokio = { version = "1.49.0", features = ["full"] }
 tor-rtcompat = "0.22.0"
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
-
-# Note: Using 0.22.0 as it matches other deps better or just safe conservative choice. 
-# Actually 0.39.0 is fine if available. Sticking to 0.22.0 to match known working state for now or recent stable.
-# Let's revert to 0.17.0? No, let's use 0.22.0 which is stable enough.
-# Actually I'll use 0.22.0 for now.

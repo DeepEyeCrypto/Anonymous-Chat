@@ -1,12 +1,12 @@
 use aes_gcm::{
-    Aes256Gcm, Nonce,
-    aead::{Aead, KeyInit},
+    Aes256Gcm,
+    aead::{Aead, AeadCore, KeyInit},
 };
 use base64::{Engine as _, engine::general_purpose};
 use jni::JNIEnv;
 use jni::objects::{JClass, JString};
 use jni::sys::jstring;
-use rand_core::{OsRng, RngCore};
+use rand_core::OsRng;
 use x25519_dalek::{PublicKey, StaticSecret};
 
 pub struct Identity {
@@ -16,7 +16,8 @@ pub struct Identity {
 
 impl Identity {
     pub fn generate() -> Self {
-        let secret = StaticSecret::new(OsRng);
+        // Updated to use random_from_rng as new is deprecated
+        let secret = StaticSecret::random_from_rng(OsRng);
         let public = PublicKey::from(&secret);
         Self { secret, public }
     }
@@ -28,7 +29,7 @@ impl Identity {
 
 #[no_mangle]
 pub extern "system" fn Java_com_phantomnet_core_crypto_SignalBridge_generateIdentity(
-    mut env: JNIEnv,
+    env: JNIEnv,
     _class: JClass,
 ) -> jstring {
     let identity = Identity::generate();
@@ -53,9 +54,9 @@ pub extern "system" fn Java_com_phantomnet_core_crypto_SignalBridge_encryptMessa
     };
 
     // MOCK: Generate a random key (simulate shared secret) for MVP
-    let key = Aes256Gcm::generate_key(&mut OsRng);
+    let key = Aes256Gcm::generate_key(OsRng);
     let cipher = Aes256Gcm::new(&key);
-    let nonce = Aes256Gcm::generate_nonce(&mut OsRng); // 96-bits; unique per message
+    let nonce = Aes256Gcm::generate_nonce(OsRng); // 96-bits; unique per message
 
     // Encrypt
     let ciphertext = match cipher.encrypt(&nonce, message_str.as_bytes()) {
@@ -116,7 +117,7 @@ pub extern "system" fn Java_com_phantomnet_core_crypto_SignalBridge_decryptMessa
 
     let key = aes_gcm::Key::<Aes256Gcm>::from_slice(key_bytes);
     let cipher = Aes256Gcm::new(key);
-    let nonce = Nonce::from_slice(nonce_bytes);
+    let nonce = aes_gcm::Nonce::from_slice(nonce_bytes);
 
     let plaintext = match cipher.decrypt(nonce, ciphertext_bytes) {
         Ok(pt) => pt,

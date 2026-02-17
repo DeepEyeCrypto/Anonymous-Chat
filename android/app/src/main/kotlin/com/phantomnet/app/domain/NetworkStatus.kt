@@ -9,6 +9,9 @@ object NetworkStatus {
 
     private val _dhtStatus = MutableStateFlow("Waiting...")
     val dhtStatus = _dhtStatus.asStateFlow()
+    
+    private val _meshStatus = MutableStateFlow("Inactive")
+    val meshStatus = _meshStatus.asStateFlow()
 
     fun updateTorStatus(status: String) {
         _torStatus.value = status
@@ -16,5 +19,9 @@ object NetworkStatus {
 
     fun updateDhtStatus(status: String) {
         _dhtStatus.value = status
+    }
+    
+    fun updateMeshStatus(status: String) {
+        _meshStatus.value = status
     }
 }

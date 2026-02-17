@@ -1,15 +1,15 @@
 use futures::StreamExt;
-use jni::JNIEnv;
 use jni::objects::{JClass, JString};
 use jni::sys::jstring;
-use libp2p::core::upgrade::Version;
+use jni::JNIEnv;
 use libp2p::noise;
 use libp2p::tcp;
 use libp2p::yamux;
 use libp2p::{
-    Multiaddr, PeerId, Swarm, Transport, identity,
-    kad::{Kademlia, KademliaConfig, KademliaEvent, store::MemoryStore},
+    identity,
+    kad::{self, store::MemoryStore},
     swarm::{NetworkBehaviour, SwarmEvent},
+    Multiaddr, PeerId, Swarm,
 };
 use serde::{Deserialize, Serialize};
 use std::error::Error;
@@ -18,9 +18,11 @@ use std::time::Duration;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc;
 
+use std::sync::OnceLock;
+
 // Global Runtime & Command Channel
-static mut RUNTIME: Option<Runtime> = None;
-static mut COMMAND_SENDER: Option<mpsc::Sender<DhtCommand>> = None;
+static RUNTIME: OnceLock<Runtime> = OnceLock::new();
+static COMMAND_SENDER: OnceLock<mpsc::Sender<DhtCommand>> = OnceLock::new();
 
 enum DhtCommand {
     AddBootstrapNode { peer_id: PeerId, address: Multiaddr },
@@ -36,33 +38,38 @@ struct PeerInfo {
 
 #[derive(NetworkBehaviour)]
 struct PhantomBehaviour {
-    kademlia: Kademlia<MemoryStore>,
+    kademlia: kad::Behaviour<MemoryStore>,
 }
 
-pub struct DhtNode {
+struct DhtNode {
     swarm: Swarm<PhantomBehaviour>,
     command_receiver: mpsc::Receiver<DhtCommand>,
     local_peer_id: PeerId,
 }
 
 impl DhtNode {
-    pub async fn new(receiver: mpsc::Receiver<DhtCommand>) -> Result<Self, Box<dyn Error>> {
+    async fn new(
+        receiver: mpsc::Receiver<DhtCommand>,
+    ) -> Result<Self, Box<dyn Error + Send + Sync>> {
         let local_key = identity::Keypair::generate_ed25519();
         let local_peer_id = PeerId::from(local_key.public());
 
-        let transport = tcp::tokio::Transport::new(tcp::Config::default().nodelay(true))
-            .upgrade(Version::V1)
-            .authenticate(noise::Config::new(&local_key)?)
-            .multiplex(yamux::Config::default())
-            .boxed();
-
-        let store = MemoryStore::new(local_peer_id);
-        let mut kad_config = KademliaConfig::default();
-        kad_config.set_query_timeout(Duration::from_secs(60));
-        let kademlia = Kademlia::with_config(local_peer_id, store, kad_config);
-
-        let behaviour = PhantomBehaviour { kademlia };
-        let swarm = Swarm::with_tokio_executor(transport, behaviour, local_peer_id);
+        let swarm = libp2p::SwarmBuilder::with_existing_identity(local_key)
+            .with_tokio()
+            .with_tcp(
+                tcp::Config::default(),
+                noise::Config::new,
+                yamux::Config::default,
+            )?
+            .with_behaviour(|_| {
+                let store = MemoryStore::new(local_peer_id);
+                let mut kad_config = kad::Config::default();
+                kad_config.set_query_timeout(Duration::from_secs(60));
+                PhantomBehaviour {
+                    kademlia: kad::Behaviour::with_config(local_peer_id, store, kad_config),
+                }
+            })?
+            .build();
 
         Ok(Self {
             swarm,
@@ -71,7 +78,7 @@ impl DhtNode {
         })
     }
 
-    pub async fn run(mut self) -> Result<(), Box<dyn Error>> {
+    async fn run(self) -> Result<(), Box<dyn Error + Send + Sync>> {
         let mut swarm = self.swarm;
         let mut command_receiver = self.command_receiver;
         let local_pid = self.local_peer_id;
@@ -135,35 +142,32 @@ impl DhtNode {
 // ... JNI Definitions ...
 #[no_mangle]
 pub extern "system" fn Java_com_phantomnet_core_network_DhtService_startDhtNode(
-    mut env: JNIEnv,
+    env: JNIEnv,
     _class: JClass,
 ) -> jstring {
-    unsafe {
-        if RUNTIME.is_none() {
-            let runtime = Runtime::new().expect("Failed to create Tokio runtime");
+    if RUNTIME.get().is_none() {
+        let runtime = Runtime::new().expect("Failed to create Tokio runtime");
 
-            let (tx, rx) = mpsc::channel(32);
-            COMMAND_SENDER = Some(tx);
+        let (tx, rx) = mpsc::channel(32);
+        let _ = COMMAND_SENDER.set(tx);
 
-            runtime.spawn(async move {
-                match DhtNode::new(rx).await {
-                    Ok(node) => {
-                        if let Err(e) = node.run().await {
-                            eprintln!("DHT Node crashed: {:?}", e);
-                        }
+        runtime.spawn(async move {
+            match DhtNode::new(rx).await {
+                Ok(node) => {
+                    if let Err(e) = node.run().await {
+                        eprintln!("DHT Node crashed: {:?}", e);
                     }
-                    Err(e) => eprintln!("Failed to start DHT Node: {:?}", e),
                 }
-            });
+                Err(e) => eprintln!("Failed to start DHT Node: {:?}", e),
+            }
+        });
 
-            RUNTIME = Some(runtime);
-            return env.new_string("DHT Node Started").unwrap().into_raw();
-        } else {
-            return env
-                .new_string("DHT Node Already Running")
-                .unwrap()
-                .into_raw();
-        }
+        let _ = RUNTIME.set(runtime);
+        env.new_string("DHT Node Started").unwrap().into_raw()
+    } else {
+        env.new_string("DHT Node Already Running")
+            .unwrap()
+            .into_raw()
     }
 }
 
@@ -184,16 +188,14 @@ pub extern "system" fn Java_com_phantomnet_core_network_DhtService_addBootstrapN
         Err(_) => return,
     };
 
-    unsafe {
-        if let Some(tx) = &COMMAND_SENDER {
-            if let (Ok(peer_id), Ok(address)) = (
-                PeerId::from_str(&peer_id_string),
-                Multiaddr::from_str(&address_string),
-            ) {
-                // Try blocking send, if not full
-                let _ = tx.blocking_send(DhtCommand::AddBootstrapNode { peer_id, address });
-                let _ = tx.blocking_send(DhtCommand::Bootstrap);
-            }
+    if let Some(tx) = COMMAND_SENDER.get() {
+        if let (Ok(peer_id), Ok(address)) = (
+            PeerId::from_str(&peer_id_string),
+            Multiaddr::from_str(&address_string),
+        ) {
+            // Try blocking send, if not full
+            let _ = tx.blocking_send(DhtCommand::AddBootstrapNode { peer_id, address });
+            let _ = tx.blocking_send(DhtCommand::Bootstrap);
         }
     }
 }
@@ -209,11 +211,9 @@ pub extern "system" fn Java_com_phantomnet_core_network_DhtService_announceToBoo
         Err(_) => return,
     };
 
-    unsafe {
-        if let Some(tx) = &COMMAND_SENDER {
-            let _ = tx.blocking_send(DhtCommand::AnnounceToHttp {
-                bootstrap_url: url_string,
-            });
-        }
+    if let Some(tx) = COMMAND_SENDER.get() {
+        let _ = tx.blocking_send(DhtCommand::AnnounceToHttp {
+            bootstrap_url: url_string,
+        });
     }
 }

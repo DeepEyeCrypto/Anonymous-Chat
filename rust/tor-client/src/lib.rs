@@ -1,25 +1,28 @@
 use arti_client::{TorClient, TorClientConfig};
-use jni::JNIEnv;
 use jni::objects::{JClass, JString};
 use jni::sys::jstring;
-use std::path::PathBuf;
-use std::sync::Arc;
+use jni::JNIEnv;
+use std::sync::{Arc, OnceLock};
 use tokio::runtime::Runtime;
 use tor_rtcompat::PreferredRuntime;
 
 // Global Runtime & Client
-static mut RUNTIME: Option<Runtime> = None;
-static mut TOR_CLIENT: Option<Arc<TorClient<PreferredRuntime>>> = None;
+static RUNTIME: OnceLock<Runtime> = OnceLock::new();
+static TOR_CLIENT: OnceLock<Arc<TorClient<PreferredRuntime>>> = OnceLock::new();
 
 async fn bootstrap_tor(cache_dir: String) -> Result<String, anyhow::Error> {
     // 1. Configure Tor
     let mut config = TorClientConfig::builder();
     config
         .storage()
-        .cache_dir(PathBuf::from(format!("{}/arti_cache", cache_dir)));
-    config
-        .storage()
-        .state_dir(PathBuf::from(format!("{}/arti_state", cache_dir)));
+        .cache_dir(arti_client::config::CfgPath::new(format!(
+            "{}/arti_cache",
+            cache_dir
+        )))
+        .state_dir(arti_client::config::CfgPath::new(format!(
+            "{}/arti_state",
+            cache_dir
+        )));
 
     let config = config.build()?;
 
@@ -30,9 +33,7 @@ async fn bootstrap_tor(cache_dir: String) -> Result<String, anyhow::Error> {
 
     println!("Tor bootstrap complete!");
 
-    unsafe {
-        TOR_CLIENT = Some(Arc::new(client));
-    }
+    let _ = TOR_CLIENT.set(Arc::new(client));
 
     Ok("Tor Bootstrapped Successfully".to_string())
 }
@@ -53,22 +54,20 @@ pub extern "system" fn Java_com_phantomnet_core_network_TorService_startTor(
         }
     };
 
-    unsafe {
-        if RUNTIME.is_none() {
-            let runtime = Runtime::new().expect("Failed to create Tokio runtime");
+    if RUNTIME.get().is_none() {
+        let runtime = Runtime::new().expect("Failed to create Tokio runtime");
 
-            // Spawn bootstrap task
-            runtime.spawn(async move {
-                match bootstrap_tor(cache_dir_str).await {
-                    Ok(msg) => println!("{}", msg),
-                    Err(e) => eprintln!("Tor Bootstrap Failed: {:?}", e),
-                }
-            });
+        // Spawn bootstrap task
+        runtime.spawn(async move {
+            match bootstrap_tor(cache_dir_str).await {
+                Ok(msg) => println!("{}", msg),
+                Err(e) => eprintln!("Tor Bootstrap Failed: {:?}", e),
+            }
+        });
 
-            RUNTIME = Some(runtime);
-            return env.new_string("Tor Starting...").unwrap().into_raw();
-        } else {
-            return env.new_string("Tor Already Running").unwrap().into_raw();
-        }
+        let _ = RUNTIME.set(runtime);
+        env.new_string("Tor Starting...").unwrap().into_raw()
+    } else {
+        env.new_string("Tor Already Running").unwrap().into_raw()
     }
 }

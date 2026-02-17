@@ -31,6 +31,7 @@ fun ConversationListScreen(
     conversations: List<Conversation>,
     torStatus: String,
     dhtStatus: String,
+    meshStatus: String,
     onConversationClick: (String) -> Unit,
     onFabClick: () -> Unit
 ) {
@@ -62,7 +63,7 @@ fun ConversationListScreen(
                 .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            NetworkStatusBanner(torStatus, dhtStatus)
+            NetworkStatusBanner(torStatus, dhtStatus, meshStatus)
             
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
@@ -77,51 +78,47 @@ fun ConversationListScreen(
 }
 
 @Composable
-fun NetworkStatusBanner(torStatus: String, dhtStatus: String) {
+fun NetworkStatusBanner(torStatus: String, dhtStatus: String, meshStatus: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.DarkGray.copy(alpha = 0.5f))
             .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(if (torStatus.contains("Success") || torStatus.contains("Connected")) HackerGreen else TorOnion)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = "TOR: $torStatus",
-                style = MaterialTheme.typography.labelSmall,
-                color = Color.White
-            )
-        }
-        
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(if (dhtStatus.contains("Started")) HackerGreen else Color.Red)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = "DHT: $dhtStatus",
-                style = MaterialTheme.typography.labelSmall,
-                color = Color.White
-            )
-        }
+        StatusPill(label = "TOR", status = torStatus, activeColor = TorOnion)
+        StatusPill(label = "DHT", status = dhtStatus, activeColor = HackerGreen)
+        StatusPill(label = "MESH", status = meshStatus, activeColor = Color.Blue)
     }
 }
+
+@Composable
+fun StatusPill(label: String, status: String, activeColor: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(if (status.contains("Started") || status.contains("Connected") || status.contains("Scanning")) activeColor else Color.Red)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = "$label",
+            style = MaterialTheme.typography.labelSmall,
+            color = Color.White,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
 
 @Composable
 fun ConversationItem(
     conversation: Conversation,
     onClick: () -> Unit
 ) {
+    // ... item code ...
+    // (Repeating item code or just using previously defined one if in same file context)
     Row(
         modifier = Modifier
             .fillMaxWidth()

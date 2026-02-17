@@ -15,6 +15,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import com.phantomnet.app.domain.NetworkStatus
 import com.phantomnet.app.domain.model.Conversation
 import com.phantomnet.app.domain.model.Message
@@ -28,6 +37,40 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val context = LocalContext.current
+            val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                listOf(
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            } else {
+                listOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            }
+
+            val launcher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestMultiplePermissions()
+            ) { perms ->
+                val allGranted = perms.values.all { it }
+                if (allGranted) {
+                    // Permissions granted
+                } else {
+                    Toast.makeText(context, "Bluetooth permissions required for Mesh", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            LaunchedEffect(Unit) {
+                val missingPermissions = permissions.filter {
+                    ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
+                }
+                if (missingPermissions.isNotEmpty()) {
+                    launcher.launch(missingPermissions.toTypedArray())
+                }
+            }
+
             PhantomNetTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -47,6 +90,7 @@ fun AppNavigation() {
     // Network Status
     val torStatus by NetworkStatus.torStatus.collectAsState()
     val dhtStatus by NetworkStatus.dhtStatus.collectAsState()
+    val meshStatus by NetworkStatus.meshStatus.collectAsState()
 
     // Mock Data
     val conversations = remember {
@@ -76,6 +120,7 @@ fun AppNavigation() {
                 conversations = conversations,
                 torStatus = torStatus,
                 dhtStatus = dhtStatus,
+                meshStatus = meshStatus,
                 onConversationClick = { id -> navController.navigate("chat/$id") },
                 onFabClick = { /* TODO: New Chat */ }
             )
