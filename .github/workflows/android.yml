@@ -24,7 +24,9 @@ jobs:
 
       - name: Set up NDK
         run: |
-          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/25.1.8937393" >> $GITHUB_ENV
+          if [ -z "$ANDROID_NDK_HOME" ]; then
+            echo "ANDROID_NDK_HOME=$ANDROID_NDK_ROOT" >> $GITHUB_ENV
+          fi
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
