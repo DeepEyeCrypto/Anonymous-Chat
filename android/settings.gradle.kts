@@ -17,4 +17,3 @@ rootProject.name = "PhantomNet"
 include(":app")
 include(":core:crypto")
 include(":core:network")
-include(":core:storage")
