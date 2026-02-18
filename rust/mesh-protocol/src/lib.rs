@@ -86,9 +86,11 @@ pub extern "system" fn Java_com_phantomnet_core_network_MeshService_startMesh(
 pub unsafe extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
     #[cfg(target_os = "android")]
     {
-        android_logger::init_once(android_logger::Config::default().with_min_level(log::Level::Info));
+        android_logger::init_once(
+            android_logger::Config::default().with_max_level(log::Level::Info),
+        );
         let vm_ptr = vm.get_java_vm_pointer() as *mut c_void;
-        ndk_context::initialize_android_context(vm_ptr);
+        ndk_context::initialize_android_context(vm_ptr, std::ptr::null_mut());
     }
 
     let _ = JAVA_VM.set(vm);
