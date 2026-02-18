@@ -8,7 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 anyhow = "1.0.86"
-arti-client = { version = "0.22.0", features = ["tokio", "rustls"] }
+arti-client = { version = "0.22.0", default-features = false, features = ["tokio", "rustls", "compression"] }
 jni = "0.21.1"
 tokio = { version = "1.49.0", features = ["full"] }
 tor-rtcompat = { version = "0.22.0", default-features = false, features = ["tokio", "rustls"] }
