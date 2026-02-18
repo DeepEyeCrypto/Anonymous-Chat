@@ -87,7 +87,7 @@ pub unsafe extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> 
     #[cfg(target_os = "android")]
     {
         android_logger::init_once(
-            android_logger::Config::default().with_max_level(log::Level::Info),
+            android_logger::Config::default().with_max_level(log::LevelFilter::Info),
         );
         let vm_ptr = vm.get_java_vm_pointer() as *mut c_void;
         ndk_context::initialize_android_context(vm_ptr, std::ptr::null_mut());
