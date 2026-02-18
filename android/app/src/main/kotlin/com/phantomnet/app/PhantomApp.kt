@@ -29,6 +29,11 @@ class PhantomApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        MeshService.setOnDeviceFoundListener { name ->
+            NetworkStatus.updateMeshStatus("Found: $name")
+        }
+
         startCoreServices()
     }
 

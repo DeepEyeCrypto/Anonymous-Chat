@@ -1,39 +1,70 @@
-# PHANTOM NET: Decentralized Secure Messenger
+# 🛡️ PHANTOM NET
 
-**Mission**: Build a fully decentralized, censorship-resistant, end-to-end encrypted messenger.
+> **"Messages without Metadata"**
+>
+> A decentralized, mixnet-powered, post-quantum resilient messenger designed for plausible deniability and extreme anonymity.
 
-## 🎯 Core Objectives
+---
 
-1. **Zero-Server Dependency**: DHT-based peer discovery.
-2. **Military-Grade Encryption**: Signal Protocol.
-3. **Censorship Resistance**: Tor onion routing (Arti).
+## 🌌 The Vision: Absolute Metadata Erasure
 
-## 🏗️ Architecture Overview
+Phantom Net is the ultimate communication toolkit for high-risk individuals. We go beyond encryption to erase the fingerprints of your digital presence. By combining **DC-Nets**, **Mixnets**, and **Private Set Intersection (PSI)**, Phantom Net ensures that your social graph and communication patterns are a black hole to any adversary.
 
-* **Layer 1**: Tor (Online), DHT-P2P (Fallback), Mesh (Offline).
-* **Layer 2**: Custom Kademlia DHT.
-* **Layer 3**: Signal Protocol E2EE.
+### 🎭 Core Pillars
 
-## 🚀 Roadmap
+* **Paranoia Transport**: Mixnets with mandatory cover traffic and DC-Net rooms for untraceable group broadcasts.
+* **Contact Discovery with 0 Leak**: Find friends via **PSI** without ever uploading your address book.
+* **Plausible Deniability**: Stealth icons, hidden personas, and panic-wiping for local safety.
+* **Zero Stable Identifiers**: Every relationship is isolated and rotatable; no global phone numbers or handles.
 
-- [x] **Phase 1: Orchestra**: Project Structure & Build System.
-* [x] **Phase 2: Layout**: Android UI (Jetpack Compose).
-* [x] **Phase 3: Logic**:
-  * [x] Signal Protocol FFI (Rust -> Kotlin).
-  * [x] Kademlia DHT Node (Rust -> Kotlin).
-  * [x] E2EE Loopback Simulation.
-* [x] **Phase 4: Network**:
-  * [x] **Bootstrap**: Private Go Rendezvous Server.
-  * [x] **Discovery**: DHT Auto-Bootstrap & Announcement.
-  * [x] **Anonymity**: Tor Client (Arti) Integration.
-  * [x] **Mesh**: Bluetooth LE Scanning (Stub/Simulation for MVP).
-  * [ ] **Routing**: Tunneling DHT over Tor.
+---
 
-## 💻 Developer Setup
+## 🏗️ Technical Architecture (Tier 2)
 
-1. **Rust**: Install & `cargo build`.
-2. **Android**: `export ANDROID_NDK_HOME=...` & `./scripts/build_android_core.sh`.
-3. **Bootstrap**: `cd bootstrap && docker build -t bootstrap . && docker run -p 3000:3000 bootstrap`
-4. **Run**: `./gradlew installDebug`.
+1. **Discovery**: Private Set Intersection (PSI) for local-only contact mapping.
+2. **Transport**: Adaptive Mixnet (Stealth) + DC-Net (Untraceable) + Onion (Fast).
+3. **Identity**: No Global ID; Rotating per-relationship queues.
+4. **Anti-Abuse**: Anonymous ZK-Tokens for rate-limiting without accounts.
+5. **Local Hardening**: Deniable personas + Panic buttons + Traffic jittering.
 
-_Powered by Antigravity_
+---
+
+## 🚀 F.L.O.W. Implementation Status
+
+| Phase | Description | Status |
+| :--- | :--- | :--- |
+| **F**rame | Architecture & Extreme Anonymity Module | 🟢 **Locked (V1.2)** |
+| **F-Call** | Audio/Video Calling FRAME | 🟢 **Locked (V1.0)** |
+| **F-Stealth** | Stealth Icon & App Disguise FRAME | 🟢 **Locked (V1.0)** |
+| **L**ayout | Advanced UI & Stealth Persona Flows | 🟡 *In Progress* |
+| **O**rchestration | DC-Net & PSI Proto Schemas | 🟡 *In Progress* |
+| **W**orld | Distributed PSI Directory | ⚪ *Planned* |
+
+---
+
+## 📋 Privacy Benchmark
+
+| Feature | Phantom Net | Signal | SimpleX |
+| :--- | :--- | :--- | :--- |
+| **Contact Discovery** | **PSI (No Upload)** | Hashed Upload | None/Manual |
+| **Metadata Protection** | **Mixnet + DC-Net** | Sealed Sender | Onion-only |
+| **Persistent ID?** | **No** | Phone/Username | No |
+| **Cover Traffic** | **Always-On Opt-in** | No | No |
+| **Local Secrecy** | **Deniable Personas** | Standard Pin | Standard Pin |
+
+---
+
+## 💻 Developer Quickstart
+
+```bash
+# High-Risk Profile Build
+./scripts/build_android_core.sh --profile paranoia
+
+# Run DC-Net Simulator
+cargo run --package dc-net-engine --example whistleblower_board
+```
+
+Complete specifications: [docs/PROTOCOL.md](./docs/PROTOCOL.md), [docs/CALLING_FRAME.md](./docs/CALLING_FRAME.md), and [docs/STEALTH_FRAME.md](./docs/STEALTH_FRAME.md).
+
+---
+*Built for the whistleblower, the journalist, and the advocate.*

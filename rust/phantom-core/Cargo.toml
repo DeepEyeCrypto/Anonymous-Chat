@@ -1,0 +1,22 @@
+[package]
+name = "phantom-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+phantom-pqc = { path = "../phantom-pqc" }
+phantom-mixnet = { path = "../phantom-mixnet" }
+phantom-psi = { path = "../phantom-psi" }
+phantom-mls = { path = "../phantom-mls" }
+phantom-sharding = { path = "../phantom-sharding" }
+phantom-dcnet = { path = "../phantom-dcnet" }
+phantom-audit = { path = "../phantom-audit" }
+phantom-sentinel = { path = "../phantom-sentinel" }
+libsignal-ffi = { path = "../libsignal-ffi" }
+tokio = { version = "1.0", features = ["full"] }
+serde_json = "1.0"
+jni = "0.21"
+log = "0.4"
+android_logger = "0.13"
+hex = "0.4"
+serde = { version = "1.0", features = ["derive"] }

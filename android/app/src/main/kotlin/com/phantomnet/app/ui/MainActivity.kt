@@ -122,7 +122,26 @@ fun AppNavigation() {
                 dhtStatus = dhtStatus,
                 meshStatus = meshStatus,
                 onConversationClick = { id -> navController.navigate("chat/$id") },
-                onFabClick = { /* TODO: New Chat */ }
+                onRoomClick = { name -> navController.navigate("room/$name") },
+                onFabClick = { navController.navigate("privacy") } // Navigating to Privacy for now
+            )
+        }
+        composable("privacy") {
+            com.phantomnet.app.ui.privacy.PrivacyDashboardScreen(
+                onBackClick = { navController.popBackStack() },
+                onBackupClick = { navController.navigate("backup") }
+            )
+        }
+        composable("backup") {
+            com.phantomnet.app.ui.backup.ShardWizardScreen(
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable("room/{roomName}") { backStackEntry ->
+            val roomName = backStackEntry.arguments?.getString("roomName") ?: "Secret Room"
+            com.phantomnet.app.ui.rooms.DcNetRoomScreen(
+                roomName = roomName,
+                onBackClick = { navController.popBackStack() }
             )
         }
         composable("chat/{conversationId}") { backStackEntry ->

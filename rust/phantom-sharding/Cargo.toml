@@ -1,0 +1,13 @@
+[package]
+name = "phantom-sharding"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gf256 = "0.3.0"
+rand = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+zeroize = "1.6"
+
+[dev-dependencies]
+hex = "0.4"

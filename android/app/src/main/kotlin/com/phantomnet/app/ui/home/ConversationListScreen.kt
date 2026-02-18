@@ -33,6 +33,7 @@ fun ConversationListScreen(
     dhtStatus: String,
     meshStatus: String,
     onConversationClick: (String) -> Unit,
+    onRoomClick: (String) -> Unit,
     onFabClick: () -> Unit
 ) {
     Scaffold(
@@ -68,6 +69,39 @@ fun ConversationListScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
+                item {
+                    Text(
+                        "UNTRACEABLE ROOMS (DC-NET)",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = HackerGreen
+                    )
+                }
+                
+                item {
+                    ConversationItem(
+                        conversation = Conversation(
+                            id = "dc-room-1",
+                            contactName = "Whistleblower Room",
+                            lastMessage = "Status: Protocol XOR-sum active",
+                            lastMessageTimestamp = System.currentTimeMillis(),
+                            unreadCount = 0,
+                            isOnline = true
+                        ),
+                        onClick = { onRoomClick("Whistleblower Room") }
+                    )
+                    Divider(color = Color.DarkGray, thickness = 0.5.dp)
+                }
+
+                item {
+                    Text(
+                        "SECURE DIRECT CHATS",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.LightGray
+                    )
+                }
+
                 items(conversations) { conversation ->
                     ConversationItem(conversation = conversation, onClick = { onConversationClick(conversation.id) })
                     Divider(color = Color.DarkGray, thickness = 0.5.dp)

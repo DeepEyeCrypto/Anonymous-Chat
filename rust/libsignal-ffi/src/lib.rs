@@ -1,16 +1,16 @@
 use aes_gcm::{
-    Aes256Gcm,
     aead::{Aead, AeadCore, KeyInit},
+    Aes256Gcm,
 };
-use base64::{Engine as _, engine::general_purpose};
-use jni::JNIEnv;
+use base64::{engine::general_purpose, Engine as _};
 use jni::objects::{JClass, JString};
 use jni::sys::jstring;
+use jni::JNIEnv;
 use rand_core::OsRng;
 use x25519_dalek::{PublicKey, StaticSecret};
 
 pub struct Identity {
-    secret: StaticSecret,
+    _secret: StaticSecret,
     public: PublicKey,
 }
 
@@ -19,7 +19,10 @@ impl Identity {
         // Updated to use random_from_rng as new is deprecated
         let secret = StaticSecret::random_from_rng(OsRng);
         let public = PublicKey::from(&secret);
-        Self { secret, public }
+        Self {
+            _secret: secret,
+            public,
+        }
     }
 
     pub fn public_key_base64(&self) -> String {

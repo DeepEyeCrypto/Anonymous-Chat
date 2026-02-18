@@ -1,0 +1,13 @@
+[package]
+name = "phantom-psi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+curve25519-dalek = { version = "4.1", features = ["rand_core"] }
+rand = "0.8"
+sha2 = "0.10"
+serde = { version = "1.0", features = ["derive"] }
+
+[dev-dependencies]
+hex = "0.4"

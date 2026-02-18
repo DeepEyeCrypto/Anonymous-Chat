@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package phantom.v1;
+
+option java_package = "com.phantomnet.core.protocol";
+option java_multiple_files = true;
+
+/**
+ * All messages in Phantom Net, whether Onion or Mixnet, share a common packet structure
+ * to prevent packet-size fingerprinting.
+ */
+message PhantomPacket {
+    // Shared fixed-size padding (MTU alignment)
+    bytes padding = 1;
+    
+    oneof content {
+        OnionLayer onion = 2;
+        MixnetLayer mixnet = 3;
+        DCNetRound dc_net = 4;
+    }
+}
+
+/**
+ * Basic multi-hop onion routing layer.
+ */
+message OnionLayer {
+    bytes next_hop_pubkey = 1;
+    bytes routing_token = 2;
+    bytes encrypted_payload = 3; // Recursive OnionLayer or ApplicationPayload
+}
+
+/**
+ * Nym-inspired mixnet layer with batching and epochs.
+ */
+message MixnetLayer {
+    uint32 epoch_id = 1;
+    bytes batch_signature = 2; // For verifiable shuffle
+    bytes encrypted_payload = 3; 
+}
+
+/**
+ * Dining Cryptographers (DC-Net) round contribution.
+ */
+message DCNetRound {
+    uint64 round_id = 1;
+    bytes xor_contribution = 2;
+}
+
+/**
+ * The end-to-end encrypted payload containing the actual application data.
+ */
+message ApplicationPayload {
+    bytes relationship_id = 1;
+    bytes signal_ciphertext = 2; // X3DH + Double Ratchet + Kyber Hybrid
+    uint64 timestamp = 3;
+    MessageType type = 4;
+}
+
+enum MessageType {
+    TEXT = 0;
+    MEDIA = 1;
+    GROUP_SYNC_MLS = 2;
+    PSI_REQUEST = 3;
+    HEARTBEAT_COVER = 4;
+}

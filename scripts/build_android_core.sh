@@ -50,4 +50,7 @@ cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -t x86 -o $JNI_LIBS_DIR build -p
 echo "🔨 Building mesh-protocol..."
 cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -t x86 -o $JNI_LIBS_DIR build -p mesh-protocol
 
+echo "🔨 Building phantom-core..."
+cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -t x86 -o $JNI_LIBS_DIR build -p phantom-core
+
 echo "✅ Build Complete! Shared libraries are in $JNI_LIBS_DIR"
