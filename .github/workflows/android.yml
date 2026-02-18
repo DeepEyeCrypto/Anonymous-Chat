@@ -42,8 +42,7 @@ jobs:
       - name: Build Android App
         run: |
           cd android
-          chmod +x gradlew
-          ./gradlew assembleRelease
+          gradle assembleRelease
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
