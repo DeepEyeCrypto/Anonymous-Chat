@@ -1312,15 +1312,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "encoding_rs"
-version = "0.8.35"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75030f3c4f45dafd7586dd6780965a8c7e8e285a5ecb86713e63a79c5b2766f3"
-dependencies = [
- "cfg-if",
-]
-
-[[package]]
 name = "enum-as-inner"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1753,25 +1744,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "h2"
-version = "0.4.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f44da3a8150a6703ed5d34e164b875fd14c2cdab9af1252a9a1020bde2bdc54"
-dependencies = [
- "atomic-waker",
- "bytes",
- "fnv",
- "futures-core",
- "futures-sink",
- "http 1.4.0",
- "indexmap 2.13.0",
- "slab",
- "tokio",
- "tokio-util",
- "tracing",
-]
-
-[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1999,7 +1971,7 @@ dependencies = [
  "futures-channel",
  "futures-core",
  "futures-util",
- "h2 0.3.27",
+ "h2",
  "http 0.2.12",
  "http-body 0.4.6",
  "httparse",
@@ -2023,7 +1995,6 @@ dependencies = [
  "bytes",
  "futures-channel",
  "futures-core",
- "h2 0.4.13",
  "http 1.4.0",
  "http-body 1.0.1",
  "httparse",
@@ -2053,22 +2024,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "hyper-tls"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "70206fc6890eaca9fde8a0bf71caa2ddfc9fe045ac9e5c70df101a7dbde866e0"
-dependencies = [
- "bytes",
- "http-body-util",
- "hyper 1.8.1",
- "hyper-util",
- "native-tls",
- "tokio",
- "tokio-native-tls",
- "tower-service",
-]
-
-[[package]]
 name = "hyper-util"
 version = "0.1.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2086,11 +2041,9 @@ dependencies = [
  "percent-encoding",
  "pin-project-lite",
  "socket2 0.6.2",
- "system-configuration 0.7.0",
  "tokio",
  "tower-service",
  "tracing",
- "windows-registry",
 ]
 
 [[package]]
@@ -2259,7 +2212,7 @@ dependencies = [
  "netlink-proto",
  "netlink-sys",
  "rtnetlink",
- "system-configuration 0.6.1",
+ "system-configuration",
  "tokio",
  "windows 0.53.0",
 ]
@@ -2963,6 +2916,7 @@ dependencies = [
  "curve25519-dalek",
  "hmac",
  "jni 0.21.1",
+ "openssl",
  "rand_core 0.6.4",
  "sha2",
  "swift-bridge",
@@ -3094,12 +3048,6 @@ dependencies = [
  "ndk-context",
  "tokio",
 ]
-
-[[package]]
-name = "mime"
-version = "0.3.17"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
 
 [[package]]
 name = "minimal-lexical"
@@ -3527,6 +3475,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c87def4c32ab89d880effc9e097653c8da5d6ef28e6b539d313baaacfbafcbe"
 
 [[package]]
+name = "openssl-src"
+version = "300.5.5+3.5.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3f1787d533e03597a7934fd0a765f0d28e94ecc5fb7789f8053b1e699a56f709"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "openssl-sys"
 version = "0.9.111"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3534,6 +3491,7 @@ checksum = "82cab2d520aa75e3c58898289429321eb788c3106963d0dc886ec7a5f4adc321"
 dependencies = [
  "cc",
  "libc",
+ "openssl-src",
  "pkg-config",
  "vcpkg",
 ]
@@ -4188,20 +4146,15 @@ checksum = "eddd3ca559203180a307f12d114c268abf583f59b03cb906fd0b3ff8646c1147"
 dependencies = [
  "base64",
  "bytes",
- "encoding_rs",
  "futures-core",
- "h2 0.4.13",
  "http 1.4.0",
  "http-body 1.0.1",
  "http-body-util",
  "hyper 1.8.1",
  "hyper-rustls",
- "hyper-tls",
  "hyper-util",
  "js-sys",
  "log",
- "mime",
- "native-tls",
  "percent-encoding",
  "pin-project-lite",
  "quinn",
@@ -4212,7 +4165,6 @@ dependencies = [
  "serde_urlencoded",
  "sync_wrapper",
  "tokio",
- "tokio-native-tls",
  "tokio-rustls",
  "tower",
  "tower-http",
@@ -5106,17 +5058,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "system-configuration"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a13f3d0daba03132c0aa9767f98351b3488edc2c100cda2d2ec2b04f3d8d3c8b"
-dependencies = [
- "bitflags 2.11.0",
- "core-foundation 0.9.4",
- "system-configuration-sys",
-]
-
-[[package]]
 name = "system-configuration-sys"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5285,16 +5226,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.116",
-]
-
-[[package]]
-name = "tokio-native-tls"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbae76ab933c85776efabc971569dd6119c580d8f5d448769dec1764bf796ef2"
-dependencies = [
- "native-tls",
- "tokio",
 ]
 
 [[package]]
@@ -6790,17 +6721,6 @@ checksum = "9150af68066c4c5c07ddc0ce30421554771e528bde427614c61038bc2c92c2b1"
 dependencies = [
  "windows-core 0.61.2",
  "windows-link 0.1.3",
-]
-
-[[package]]
-name = "windows-registry"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02752bf7fbdcce7f2a27a742f798510f3e5ad88dbe84871e5168e2120c3d5720"
-dependencies = [
- "windows-link 0.2.1",
- "windows-result 0.4.1",
- "windows-strings 0.5.1",
 ]
 
 [[package]]
