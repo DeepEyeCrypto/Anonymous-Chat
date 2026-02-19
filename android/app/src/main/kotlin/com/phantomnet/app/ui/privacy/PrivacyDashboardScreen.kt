@@ -49,7 +49,7 @@ fun PrivacyDashboardScreen(
             val colorStr = colorMatch?.groupValues?.get(1) ?: "#FFD600"
             
             Pair(score, Color(android.graphics.Color.parseColor(colorStr)))
-        } catch (e: Exception) {
+        } catch (t: Throwable) {
             Pair(50, Color.Yellow)
         }
     }
@@ -202,7 +202,9 @@ fun PrivacyDashboardScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             Button(
-                onClick = { PhantomCore.triggerSentinelAction(1) },
+                onClick = {
+                    runCatching { PhantomCore.triggerSentinelAction(1) }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5252)),
                 shape = RoundedCornerShape(12.dp)

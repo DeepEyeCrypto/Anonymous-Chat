@@ -108,8 +108,12 @@ fun DcNetRoomScreen(
                 IconButton(
                     onClick = {
                         if (messageText.isNotBlank()) {
-                            val contribution = PhantomCore.computeDcNetContribution(1, messageText)
-                            resultLog = resultLog + "Contribution generated: ${contribution.take(20)}..."
+                            val contributionPreview = runCatching {
+                                PhantomCore.computeDcNetContribution(1, messageText).take(20)
+                            }.getOrElse {
+                                "DC-Net unavailable"
+                            }
+                            resultLog = resultLog + "Contribution generated: $contributionPreview..."
                             resultLog = resultLog + "Broadcasting XOR-sum to room..."
                             messageText = ""
                         }

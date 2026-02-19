@@ -93,11 +93,15 @@ fun ShardWizardScreen(
 
             Button(
                 onClick = {
-                    resultText = PhantomCore.splitSecret(
-                        "PHANTOM_PRIVATE_KEY_PLAINTEXT_MOCK",
-                        threshold.toInt(),
-                        totalShards.toInt()
-                    )
+                    resultText = runCatching {
+                        PhantomCore.splitSecret(
+                            "PHANTOM_PRIVATE_KEY_PLAINTEXT_MOCK",
+                            threshold.toInt(),
+                            totalShards.toInt()
+                        )
+                    }.getOrElse {
+                        "Secure backup unavailable on this build."
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00E676)),

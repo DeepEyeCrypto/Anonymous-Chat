@@ -2,6 +2,20 @@
 
 All notable changes to the **Phantom Net** project will be documented in this file.
 
+## [1.4.4] - 2026-02-20
+
+### Fixed
+
+- **Release startup crash (R8 shrinker)**: disabled app release minification/resource shrinking in `android/app/build.gradle.kts` (`isMinifyEnabled = false`, `isShrinkResources = false`) to prevent runtime class stripping used indirectly by Compose/Navigation/ViewModel flows.
+- **Release stability for JNI-backed UI actions**: hardened UI screens against native-link/runtime failures by wrapping `PhantomCore` calls with safe fallbacks instead of letting uncaught throwables crash the process.
+  - `PrivacyDashboardScreen`: catch `Throwable` for audit parsing path and protect PANIC action call.
+  - `ShardWizardScreen`: protect `splitSecret(...)` and show a user-safe fallback message when unavailable.
+  - `DcNetRoomScreen`: protect `computeDcNetContribution(...)` and degrade gracefully.
+
+### Changed
+
+- Android app version updated to `1.4.4` (`versionCode 6`) for release packaging.
+
 ## [1.4.0] - 2026-02-19
 
 ### Added
