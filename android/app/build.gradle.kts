@@ -12,8 +12,8 @@ android {
         applicationId = "com.phantomnet.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.4.2"
+        versionCode = 5
+        versionName = "1.4.3"
             
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -36,8 +36,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             signingConfig = signingConfigs.getByName("debug")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
