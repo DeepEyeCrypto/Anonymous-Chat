@@ -46,10 +46,15 @@ jobs:
       - name: Build Native Libraries
         run: ./scripts/build_android_core.sh
 
+      - name: Generate Gradle Wrapper
+        run: |
+          cd android
+          gradle wrapper --gradle-version 8.10.2
+
       - name: Build Android App
         run: |
           cd android
-          ./gradlew assembleRelease || ./gradlew assembleDebug
+          gradle assembleRelease || gradle assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
