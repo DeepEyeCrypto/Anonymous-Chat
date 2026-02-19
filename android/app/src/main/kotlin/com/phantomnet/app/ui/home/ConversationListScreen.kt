@@ -146,6 +146,7 @@ fun StatusPill(label: String, status: String, activeColor: Color) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConversationItem(
     conversation: Conversation,
