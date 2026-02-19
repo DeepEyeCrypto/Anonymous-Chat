@@ -12,18 +12,24 @@ android {
         applicationId = "com.phantomnet.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.4.0"
+        versionCode = 3
+        versionName = "1.4.1"
             
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Only bundle arm64 + x86_64 (covers 99%+ of devices + emulators)
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86_64")
+        }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -41,6 +47,10 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        // Remove duplicate .so if any
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
 }

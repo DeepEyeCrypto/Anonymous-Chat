@@ -39,20 +39,29 @@ for target in $ANDROID_TARGETS; do
     rustup target add $target
 done
 
-# Build Libraries
-echo "🔨 Building libsignal-ffi..."
-cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -t x86 -o $JNI_LIBS_DIR build -p libsignal-ffi
+# Detect NDK strip tool
+STRIP_TOOL=$(find "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt" -name "llvm-strip" | head -1)
+if [ -z "$STRIP_TOOL" ]; then
+    echo "⚠️  llvm-strip not found in NDK, symbols will not be stripped"
+    STRIP_TOOL="true"  # no-op
+fi
 
-echo "🔨 Building kademlia-dht..."
-cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -t x86 -o $JNI_LIBS_DIR build -p kademlia-dht
+# Build all libraries in RELEASE mode
+CRATES="libsignal-ffi kademlia-dht tor-client mesh-protocol phantom-core"
 
-echo "🔨 Building tor-client..."
-cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -t x86 -o $JNI_LIBS_DIR build -p tor-client
+for crate in $CRATES; do
+    echo "🔨 Building $crate (release)..."
+    cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -t x86 -o $JNI_LIBS_DIR build --release -p $crate
+done
 
-echo "🔨 Building mesh-protocol..."
-cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -t x86 -o $JNI_LIBS_DIR build -p mesh-protocol
+# Strip debug symbols from all .so files
+echo "🗜️  Stripping debug symbols..."
+find $JNI_LIBS_DIR -name "*.so" -exec "$STRIP_TOOL" --strip-unneeded {} \;
 
-echo "🔨 Building phantom-core..."
-cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -t x86 -o $JNI_LIBS_DIR build -p phantom-core
+# Report sizes
+echo ""
+echo "📊 Library sizes after strip:"
+find $JNI_LIBS_DIR -name "*.so" -exec ls -lh {} \; | awk '{print $5, $NF}'
 
+echo ""
 echo "✅ Build Complete! Shared libraries are in $JNI_LIBS_DIR"
