@@ -10,7 +10,31 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class ChatViewModel : ViewModel() {
+interface CryptoEngine {
+    fun encryptMessage(message: String, recipientPublicKey: String): String
+    fun decryptMessage(encryptedMessage: String): String
+}
+
+object SignalCryptoEngine : CryptoEngine {
+    override fun encryptMessage(message: String, recipientPublicKey: String): String {
+        return SignalBridge.encryptMessage(message, recipientPublicKey)
+    }
+
+    override fun decryptMessage(encryptedMessage: String): String {
+        return SignalBridge.decryptMessage(encryptedMessage)
+    }
+}
+
+class ChatViewModel(
+    private val cryptoEngine: CryptoEngine,
+    private val echoDelayMs: Long
+) : ViewModel() {
+
+    constructor() : this(
+        cryptoEngine = SignalCryptoEngine,
+        echoDelayMs = 1_000L
+    )
+
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val messages: StateFlow<List<Message>> = _messages.asStateFlow()
 
@@ -21,11 +45,18 @@ class ChatViewModel : ViewModel() {
     }
 
     fun sendMessage(text: String, recipientKey: String) {
+        if (text.isBlank()) return
+
         viewModelScope.launch {
             // 1. Encrypt (Native Rust Call)
             // In a real app, recipientKey would be their Identity Key + PreKeys.
             // Here we just pass a string to satisfy the signature.
-            val encryptedBase64 = SignalBridge.encryptMessage(text, recipientKey)
+            val encryptedBase64 = try {
+                cryptoEngine.encryptMessage(text, recipientKey)
+            } catch (t: Throwable) {
+                addSystemMessage("Message not sent: encryption unavailable")
+                return@launch
+            }
             
             // 2. Add "My" message to UI (Optimistic update)
             val myMessage = Message(
@@ -46,10 +77,15 @@ class ChatViewModel : ViewModel() {
 
     private fun simulateNetworkEcho(encryptedPayload: String) {
         viewModelScope.launch {
-            kotlinx.coroutines.delay(1000) // Network latency
+            kotlinx.coroutines.delay(echoDelayMs) // Network latency
             
             // 4. Decrypt (Native Rust Call)
-            val decryptedText = SignalBridge.decryptMessage(encryptedPayload)
+            val decryptedText = try {
+                cryptoEngine.decryptMessage(encryptedPayload)
+            } catch (t: Throwable) {
+                addSystemMessage("Incoming message unavailable: decryption failed")
+                return@launch
+            }
             
             val replyMessage = Message(
                 id = UUID.randomUUID().toString(),
@@ -60,5 +96,17 @@ class ChatViewModel : ViewModel() {
             )
             _messages.value += replyMessage
         }
+    }
+
+    private fun addSystemMessage(content: String) {
+        val systemMessage = Message(
+            id = UUID.randomUUID().toString(),
+            senderId = "system",
+            content = content,
+            timestamp = System.currentTimeMillis(),
+            isMe = false,
+            isDelivered = true
+        )
+        _messages.value += systemMessage
     }
 }

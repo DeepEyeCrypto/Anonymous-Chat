@@ -14,24 +14,43 @@ import java.io.File
 class PhantomApp : Application() {
     companion object {
         private const val TAG = "PhantomNet"
+        private var dhtNativeLoaded = false
+        private var torNativeLoaded = false
+        private var meshNativeLoaded = false
+
+        private fun loadNativeLibrary(name: String): Boolean {
+            return try {
+                System.loadLibrary(name)
+                Log.i(TAG, "Loaded native library: $name")
+                true
+            } catch (e: UnsatisfiedLinkError) {
+                Log.e(TAG, "Failed to load native library: $name", e)
+                false
+            }
+        }
         
         init {
-            try {
-                System.loadLibrary("libsignal_ffi")
-                System.loadLibrary("kademlia_dht")
-                System.loadLibrary("tor_client")
-                System.loadLibrary("mesh_protocol")
-            } catch (e: UnsatisfiedLinkError) {
-                Log.e(TAG, "Failed to load native libraries", e)
-            }
+            loadNativeLibrary("libsignal_ffi")
+            dhtNativeLoaded = loadNativeLibrary("kademlia_dht")
+            torNativeLoaded = loadNativeLibrary("tor_client")
+            meshNativeLoaded = loadNativeLibrary("mesh_protocol")
         }
     }
 
     override fun onCreate() {
         super.onCreate()
 
-        MeshService.setOnDeviceFoundListener { name ->
-            NetworkStatus.updateMeshStatus("Found: $name")
+        if (meshNativeLoaded) {
+            try {
+                MeshService.setOnDeviceFoundListener { name ->
+                    NetworkStatus.updateMeshStatus("Found: $name")
+                }
+            } catch (t: Throwable) {
+                NetworkStatus.updateMeshStatus("Unavailable: ${t.message}")
+                Log.e(TAG, "Mesh callback setup failed", t)
+            }
+        } else {
+            NetworkStatus.updateMeshStatus("Unavailable: native lib missing")
         }
 
         startCoreServices()
@@ -40,42 +59,52 @@ class PhantomApp : Application() {
     private fun startCoreServices() {
         CoroutineScope(Dispatchers.IO).launch {
             // 1. Start Tor (Needs cache dir)
-            try {
-                NetworkStatus.updateTorStatus("Bootstrapping...")
-                val cacheDir = File(cacheDir, "tor_data")
-                if (!cacheDir.exists()) cacheDir.mkdirs()
-                
-                val status = TorService.startTor(cacheDir.absolutePath)
-                NetworkStatus.updateTorStatus(status)
-                Log.i(TAG, "Tor Status: $status")
-            } catch (e: Exception) {
-                NetworkStatus.updateTorStatus("Failed: ${e.message}")
-                Log.e(TAG, "Failed to start Tor", e)
+            if (torNativeLoaded) {
+                try {
+                    NetworkStatus.updateTorStatus("Bootstrapping...")
+                    val cacheDir = File(cacheDir, "tor_data")
+                    if (!cacheDir.exists()) cacheDir.mkdirs()
+
+                    val status = TorService.startTor(cacheDir.absolutePath)
+                    NetworkStatus.updateTorStatus(status)
+                    Log.i(TAG, "Tor Status: $status")
+                } catch (t: Throwable) {
+                    NetworkStatus.updateTorStatus("Failed: ${t.message}")
+                    Log.e(TAG, "Failed to start Tor", t)
+                }
+            } else {
+                NetworkStatus.updateTorStatus("Unavailable: native lib missing")
             }
 
             // 2. Start DHT (Independent for now, later will route through Tor)
-            try {
-                NetworkStatus.updateDhtStatus("Starting Node...")
-                val status = DhtService.startDhtNode()
-                NetworkStatus.updateDhtStatus(status)
-                Log.i(TAG, "DHT Status: $status")
-                
-                // Auto-bootstrap (for demo)
-                DhtService.announceToBootstrap("http://10.0.2.2:3000") // 10.0.2.2 is localhost from Emulator
-            } catch (e: Exception) {
-                NetworkStatus.updateDhtStatus("Failed: ${e.message}")
-                Log.e(TAG, "Failed to start DHT Node", e)
+            if (dhtNativeLoaded) {
+                try {
+                    NetworkStatus.updateDhtStatus("Starting Node...")
+                    val status = DhtService.startDhtNode()
+                    NetworkStatus.updateDhtStatus(status)
+                    Log.i(TAG, "DHT Status: $status")
+
+                    // Auto-bootstrap (for demo)
+                    DhtService.announceToBootstrap("http://10.0.2.2:3000") // 10.0.2.2 is localhost from Emulator
+                } catch (t: Throwable) {
+                    NetworkStatus.updateDhtStatus("Failed: ${t.message}")
+                    Log.e(TAG, "Failed to start DHT Node", t)
+                }
+            } else {
+                NetworkStatus.updateDhtStatus("Unavailable: native lib missing")
             }
             
             // 3. Start Mesh (Stub/Simulation for now)
-            try {
-                NetworkStatus.updateMeshStatus("Scanning...")
-                val status = MeshService.startMesh()
-                NetworkStatus.updateMeshStatus(status)
-                Log.i(TAG, "Mesh Status: $status")
-            } catch (e: Exception) {
-                NetworkStatus.updateMeshStatus("Failed: ${e.message}")
-                Log.e(TAG, "Failed to start Mesh Service", e)
+            if (meshNativeLoaded) {
+                try {
+                    NetworkStatus.updateMeshStatus("Scanning...")
+                    val status = MeshService.startMesh()
+                    NetworkStatus.updateMeshStatus(status)
+                    Log.i(TAG, "Mesh Status: $status")
+                } catch (t: Throwable) {
+                    NetworkStatus.updateMeshStatus("Failed: ${t.message}")
+                    Log.e(TAG, "Failed to start Mesh Service", t)
+                }
             }
         }
     }

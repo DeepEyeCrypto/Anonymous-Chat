@@ -1,4 +1,3 @@
-use rand::Rng;
 use std::collections::HashMap;
 
 /// A participant in the DC-Net room.
@@ -78,6 +77,7 @@ impl DcNetRoom {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rand::Rng;
 
     #[test]
     fn test_dcnet_untraceable_broadcast() {

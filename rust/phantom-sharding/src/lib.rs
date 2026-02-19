@@ -1,6 +1,5 @@
 use gf256::gf256;
 use rand::Rng;
-use zeroize::Zeroize;
 
 /// Represents a single shard of a secret.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -67,8 +66,8 @@ impl ShardingManager {
             let mut val = gf256(0);
 
             for shard_j in shards {
-                let mut xj = gf256(shard_j.x);
-                let mut yj = gf256(shard_j.y[i]);
+                let xj = gf256(shard_j.x);
+                let yj = gf256(shard_j.y[i]);
                 let mut li = gf256(1);
 
                 for shard_m in shards {
