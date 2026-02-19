@@ -18,3 +18,7 @@ rootProject.name = "PhantomNet"
 include(":app")
 include(":core:crypto")
 include(":core:network")
+include(":core:database")
+include(":core:identity")
+include(":feature:onboarding")
+include(":feature:settings")

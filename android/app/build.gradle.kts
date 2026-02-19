@@ -67,6 +67,10 @@ android {
 dependencies {
     implementation(project(":core:crypto"))
     implementation(project(":core:network"))
+    implementation(project(":core:database"))
+    implementation(project(":core:identity"))
+    implementation(project(":feature:onboarding"))
+    implementation(project(":feature:settings"))
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.navigation:navigation-compose:2.7.6")
     implementation("androidx.core:core-ktx:1.12.0")
