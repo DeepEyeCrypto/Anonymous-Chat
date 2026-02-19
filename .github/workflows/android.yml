@@ -36,7 +36,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
-          cache-enabled: true
+          cache-disabled: false
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
