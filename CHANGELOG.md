@@ -2,6 +2,29 @@
 
 All notable changes to the **Phantom Net** project will be documented in this file.
 
+## [2.0.0-alpha.1] - 2026-02-20
+
+### Added
+
+- **Onboarding flow**: 3-screen intro (Welcome → Privacy Promise → Identity Creation) with animated splash screen, emerald glow pulse, and live fingerprint hex grid.
+- **Tab navigation**: 4-tab bottom nav (Chats / Discover / Vault / Settings) with per-tab back stacks and state restoration.
+- **Settings screen**: Identity fingerprint card (tap-to-copy), security section links, Rust Core status, and WIPE IDENTITY button with "type DELETE" confirmation.
+- **Discovery screen**: Animated radar sweep with PSI info chips (coming soon placeholder).
+- **Vault screen**: Pulsing lock animation (coming soon placeholder).
+- **`core:database` module**: Room + SQLCipher encrypted persistence with 3 entities (Persona, Conversation, Message), 3 DAOs, and `PhantomDatabaseFactory`.
+- **`core:identity` module**: `IdentityManager` with EncryptedSharedPreferences, key generation, passphrase derivation, and forensic-grade wipe.
+- **Domain models**: `Persona`, `Conversation`, `Message`, `RoutingMode`, `MessageStatus`.
+- **CI pipelines**: `android-ci.yml` for fast dev/PR builds, updated `rust-ci.yml` with clippy + cargo audit.
+
+### Changed
+
+- **Design system**: Upgraded to "Obsidian & Emerald" palette (12 semantic color tokens). Forced dark theme, no dynamic color.
+- **Theme**: Status bar and navigation bar now use Obsidian (`#0B0E11`) instead of primary green.
+- **Architecture**: Multi-module Gradle structure with `core:database`, `core:identity`, `feature:onboarding`, `feature:settings`.
+- **CI**: Renamed `android.yml` → `android-release.yml`; Rust CI now triggers on `dev` branch.
+- Android app version bumped to `2.0.0-alpha.1` (`versionCode 8`).
+- **Branching**: Trunk-based workflow with `dev` integration branch.
+
 ## [1.4.5] - 2026-02-20
 
 ### Fixed
