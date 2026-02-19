@@ -108,8 +108,8 @@ A built-in diagnostic tool to help users select the right protection level:
 
 ## 7. HANDOFF CONTRACTS (V1.2.0)
 
-* **LAYOUT**: Design the **Stealth Persona switch**, the **PSI discovery flow**, and the **Anon Sanity Checker diagrams**.
-* **ORCHESTRATION**: Define the **DC-Net XOR-sum protocol** and the **Blind Signature issuance service** APIs.
+* **LAYOUT**: Design the **Stealth Persona switch**, the **PSI discovery flow**, the **Anon Sanity Checker diagrams**, and the **calling UX/state flows** from `docs/CALLING_FRAME.md`.
+* **ORCHESTRATION**: Define the **DC-Net XOR-sum protocol**, the **Blind Signature issuance service** APIs, and the **calling `CALL_SIGNAL` control contracts**.
 * **WORLD**: Architect the **Distributed PSI Directory** and the **Traffic Hardening test suite**.
 
 ---

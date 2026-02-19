@@ -13,7 +13,9 @@ echo "======================================"
 if [ -z "$ANDROID_NDK_HOME" ]; then
     echo "⚠️  ANDROID_NDK_HOME is not set. Please set it to your NDK installation path."
     # Try to use Android Studio's default NDK if available
-    if [ -d "$HOME/Library/Android/sdk/ndk/25.1.8937393" ]; then
+    if [ -d "$ANDROID_HOME/ndk/25.1.8937393" ]; then
+         export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/25.1.8937393"
+    elif [ -d "$HOME/Library/Android/sdk/ndk/25.1.8937393" ]; then
          export ANDROID_NDK_HOME="$HOME/Library/Android/sdk/ndk/25.1.8937393"
     elif [ -d "$HOME/Library/Android/sdk/ndk-bundle" ]; then
          export ANDROID_NDK_HOME="$HOME/Library/Android/sdk/ndk-bundle"

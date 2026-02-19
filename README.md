@@ -36,8 +36,8 @@ Phantom Net is the ultimate communication toolkit for high-risk individuals. We 
 | **F**rame | Architecture & Extreme Anonymity Module | 🟢 **Locked (V1.2)** |
 | **F-Call** | Audio/Video Calling FRAME | 🟢 **Locked (V1.0)** |
 | **F-Stealth** | Stealth Icon & App Disguise FRAME | 🟢 **Locked (V1.0)** |
-| **L**ayout | Advanced UI & Stealth Persona Flows | 🟡 *In Progress* |
-| **O**rchestration | DC-Net & PSI Proto Schemas | 🟡 *In Progress* |
+| **L**ayout | Advanced UI & Stealth Persona Flows + Calling Flows | 🟡 *In Progress* |
+| **O**rchestration | DC-Net, PSI & Calling Proto Contracts | 🟡 *In Progress* |
 | **W**orld | Distributed PSI Directory | ⚪ *Planned* |
 
 ---
@@ -64,7 +64,7 @@ Phantom Net is the ultimate communication toolkit for high-risk individuals. We 
 cargo run --package dc-net-engine --example whistleblower_board
 ```
 
-Complete specifications: [docs/PROTOCOL.md](./docs/PROTOCOL.md), [docs/CALLING_FRAME.md](./docs/CALLING_FRAME.md), and [docs/STEALTH_FRAME.md](./docs/STEALTH_FRAME.md).
+Complete specifications: [docs/PROTOCOL.md](./docs/PROTOCOL.md), [docs/CALLING_FRAME.md](./docs/CALLING_FRAME.md), [docs/CALLING_LAYOUT.md](./docs/CALLING_LAYOUT.md), and [docs/STEALTH_FRAME.md](./docs/STEALTH_FRAME.md).
 
 ---
 *Built for the whistleblower, the journalist, and the advocate.*

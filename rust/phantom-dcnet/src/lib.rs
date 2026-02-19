@@ -102,7 +102,7 @@ mod tests {
         p3.add_shared_secret(2, k23.clone());
 
         // Participant 2 wants to send a secret message
-        let secret_message = b"HELLOPROTOCOL77";
+        let secret_message = b"HELLO_PROTOCOL_!";
 
         let c1 = p1.compute_contribution(None);
         let c2 = p2.compute_contribution(Some(secret_message));

@@ -3,8 +3,8 @@
 ## Phase O: ORCHESTRATION (Contracts & API Synthesis)
 
 > **Status**: ACTIVE (ORCHESTRATION PHASE START)  
-> **Version**: 1.0.0  
-> **Focus**: Defining the Protobuf schemas, FFI boundaries, and Protocol State Machines.
+> **Version**: 1.1.0
+> **Focus**: Defining Protobuf schemas, FFI boundaries, protocol state machines, and calling-control contracts.
 
 ---
 
@@ -53,8 +53,40 @@ enum MessageType {
     GROUP_SYNC_MLS = 2;
     PSI_REQUEST = 3;
     HEARTBEAT_COVER = 4;
+    CALL_SIGNAL = 5;
 }
 ```
+
+### 1.1 Calling signaling envelope contract (new)
+
+Calling control now rides inside `ApplicationPayload.signal_ciphertext` with:
+
+* `MessageType = CALL_SIGNAL`
+* payload contract: `CallControl` (see `proto/phantom.proto`)
+
+`CallControl` includes:
+
+1. Session scoping (`session_id`, `sequence`, `timestamp`)
+2. Mode binding (`FAST` / `PRIVATE` / `PARANOID`)
+3. Media kind (`AUDIO` / `VIDEO` / `AUDIO_VIDEO`)
+4. Auth binding (`auth_tag` over critical fields)
+5. Typed oneof detail for call events:
+   * `CALL_OFFER`
+   * `CALL_ANSWER`
+   * `CALL_CANDIDATE`
+   * `CALL_ACCEPT` / `CALL_DECLINE`
+   * `CALL_RING`
+   * `CALL_REKEY`
+   * `CALL_HANGUP`
+   * `CALL_MODE_SWITCH_REQUEST`
+   * `CALL_MODE_SWITCH_ACK`
+
+Policy guarantees:
+
+1. Session IDs are bound to `relationship_id` domain.
+2. `sequence` must be monotonic (replay resistance).
+3. Candidate classes are mode-validated (no silent privacy downgrade).
+4. Unsupported call modes fail closed.
 
 ---
 
@@ -116,6 +148,32 @@ The background worker handles the "Paranoia" throughput:
 * **Interval Pulse**: Every $T$ seconds (jittered), the orchestrator checks the `OutgoingQueue`.
 * **Dummy Injection**: If `Queue.is_empty()`, generate a `MessageType::HEARTBEAT_COVER` packet.
 * **Mixnet Release**: Batch $N$ packets into the current `Mixnet Epoch` for simultaneous dispatch.
+
+---
+
+## 6. CALL ORCHESTRATOR STATE CONTRACTS
+
+To align with `docs/CALLING_FRAME.md` and `docs/CALLING_LAYOUT.md`, clients must map call events into deterministic lifecycle transitions.
+
+### 6.1 Outgoing flow contract
+
+`CALL_OFFER` → `CALL_RING` → (`CALL_ACCEPT` | `CALL_DECLINE`) → `CALL_ANSWER` + `CALL_CANDIDATE*` → active media
+
+### 6.2 Incoming flow contract
+
+`CALL_OFFER` received → local ring state → (`CALL_ACCEPT` | `CALL_DECLINE`) → `CALL_ANSWER` + `CALL_CANDIDATE*`
+
+### 6.3 In-call control contract
+
+* Rekey: `CALL_REKEY` (epoch/key commitment update)
+* Mode switch: `CALL_MODE_SWITCH_REQUEST` ↔ `CALL_MODE_SWITCH_ACK`
+* Teardown: `CALL_HANGUP`
+
+### 6.4 Failure policy
+
+1. If mode policy check fails, emit `CALL_DECLINE(reason=POLICY_BLOCKED)`.
+2. If candidate class violates mode, candidate is dropped and locally audited.
+3. If reconnect timeout expires, emit `CALL_HANGUP(reason=NETWORK_LOSS)`.
 
 ---
 *Next Step: Architect the WORLD phase (CI/CD, Service Node Staking, and Decentralized Discovery).*
