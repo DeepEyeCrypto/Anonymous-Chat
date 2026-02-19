@@ -3,12 +3,15 @@ members = [
     "rust/libsignal-ffi",
     "rust/kademlia-dht",
     "rust/tor-client",
-    "rust/mesh-protocol"
-, "rust/phantom-mixnet", "rust/phantom-mls", "rust/phantom-pqc",
+    "rust/mesh-protocol",
+    "rust/phantom-mixnet",
+    "rust/phantom-mls",
+    "rust/phantom-pqc",
     "rust/phantom-psi",
     "rust/phantom-core",
     "rust/phantom-sharding",
     "rust/phantom-dcnet",
     "rust/phantom-audit",
-    "rust/phantom-sentinel", "rust/phantom-psi", "rust/phantom-core", "rust/phantom-sharding", "rust/phantom-dcnet", "rust/phantom-audit", "rust/phantom-sentinel"]
+    "rust/phantom-sentinel",
+]
 resolver = "2"
