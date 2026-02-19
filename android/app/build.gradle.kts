@@ -12,8 +12,8 @@ android {
         applicationId = "com.phantomnet.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.4.1"
+        versionCode = 4
+        versionName = "1.4.2"
             
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -26,10 +26,19 @@ android {
         }
     }
 
+    signingConfigs {
+        // Use debug keystore for CI/sideload builds
+        // For Play Store, replace with a proper release keystore
+        getByName("debug") {
+            // Uses default debug keystore — auto-available everywhere
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
