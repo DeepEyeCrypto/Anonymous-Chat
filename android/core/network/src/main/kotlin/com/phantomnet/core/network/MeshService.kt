@@ -4,10 +4,6 @@ object MeshService {
     @Volatile
     private var onDeviceFoundListener: ((String) -> Unit)? = null
 
-    init {
-        System.loadLibrary("mesh_protocol")
-    }
-
     @JvmStatic
     external fun startMesh(): String
 

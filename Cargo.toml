@@ -21,4 +21,3 @@ opt-level = "z"     # Optimize for size
 lto = true          # Link-time optimization (cross-crate dead code elimination)
 codegen-units = 1   # Single codegen unit for maximum optimization
 strip = true        # Strip symbols at link time
-panic = "abort"     # Smaller binary — no unwinding tables

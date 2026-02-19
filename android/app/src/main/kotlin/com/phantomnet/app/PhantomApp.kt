@@ -40,20 +40,24 @@ class PhantomApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (meshNativeLoaded) {
-            try {
-                MeshService.setOnDeviceFoundListener { name ->
-                    NetworkStatus.updateMeshStatus("Found: $name")
+        try {
+            if (meshNativeLoaded) {
+                try {
+                    MeshService.setOnDeviceFoundListener { name ->
+                        NetworkStatus.updateMeshStatus("Found: $name")
+                    }
+                } catch (t: Throwable) {
+                    NetworkStatus.updateMeshStatus("Unavailable: ${t.message}")
+                    Log.e(TAG, "Mesh callback setup failed", t)
                 }
-            } catch (t: Throwable) {
-                NetworkStatus.updateMeshStatus("Unavailable: ${t.message}")
-                Log.e(TAG, "Mesh callback setup failed", t)
+            } else {
+                NetworkStatus.updateMeshStatus("Unavailable: native lib missing")
             }
-        } else {
-            NetworkStatus.updateMeshStatus("Unavailable: native lib missing")
-        }
 
-        startCoreServices()
+            startCoreServices()
+        } catch (t: Throwable) {
+            Log.e(TAG, "Fatal error during app initialization, continuing with degraded mode", t)
+        }
     }
 
     private fun startCoreServices() {
