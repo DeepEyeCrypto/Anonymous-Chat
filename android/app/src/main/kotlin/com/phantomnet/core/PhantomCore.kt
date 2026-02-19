@@ -4,48 +4,64 @@ import android.util.Log
 
 /**
  * Kotlin wrapper for the Phantom Net Rust Core (FFI).
+ *
+ * All native calls are guarded so that if the .so is missing or any JNI
+ * function is not linked, the caller gets a clear fallback instead of a crash.
  */
 object PhantomCore {
     private const val TAG = "PhantomCore"
 
+    /** true only when phantom_core.so was loaded AND initLogging() succeeded */
+    @Volatile
+    var isAvailable: Boolean = false
+        private set
+
     init {
         try {
             System.loadLibrary("phantom_core")
-            Log.i(TAG, "Successfully loaded phantom_core native library")
-            initLogging()
+            initLogging()            // only call if loadLibrary succeeded
+            isAvailable = true
+            Log.i(TAG, "phantom_core native library ready")
         } catch (e: UnsatisfiedLinkError) {
-            Log.e(TAG, "Failed to load phantom_core native library: ${e.message}")
+            Log.e(TAG, "phantom_core unavailable: ${e.message}")
+        } catch (t: Throwable) {
+            Log.e(TAG, "phantom_core init error: ${t.message}")
         }
     }
 
-    /**
-     * Initializes the Rust logger (android_logger) for Logcat output.
-     */
-    external fun initLogging()
+    /* -------- guarded public API -------- */
 
-    /**
-     * Generates a new Post-Quantum (Kyber) Identity.
-     * @return Serialized identity string.
-     */
-    external fun generateIdentity(): String
+    fun generateIdentitySafe(): String {
+        if (!isAvailable) return "unavailable: native lib missing"
+        return try { generateIdentity() } catch (t: Throwable) { "error: ${t.message}" }
+    }
 
-    /**
-     * Splits a secret into N shards requiring T for reconstruction.
-     */
-    external fun splitSecret(secret: String, threshold: Int, total: Int): String
+    fun splitSecretSafe(secret: String, threshold: Int, total: Int): String {
+        if (!isAvailable) return "Secure backup unavailable on this build."
+        return try { splitSecret(secret, threshold, total) } catch (t: Throwable) { "error: ${t.message}" }
+    }
 
-    /**
-     * Computes the DC-Net contribution for an untraceable room round.
-     */
-    external fun computeDcNetContribution(myId: Int, message: String): String
+    fun computeDcNetContributionSafe(myId: Int, message: String): String {
+        if (!isAvailable) return "DC-Net unavailable"
+        return try { computeDcNetContribution(myId, message) } catch (t: Throwable) { "error: ${t.message}" }
+    }
 
-    /**
-     * Runs a privacy audit and returns a JSON report with score and recommendations.
-     */
-    external fun runPrivacyAudit(configJson: String): String
+    fun runPrivacyAuditSafe(configJson: String): String {
+        if (!isAvailable) return """{"risk_score":50,"status_color":"#FFD600","note":"native lib missing"}"""
+        return try { runPrivacyAudit(configJson) } catch (t: Throwable) { """{"risk_score":50,"status_color":"#FFD600","error":"${t.message}"}""" }
+    }
 
-    /**
-     * Triggers a sentinel action (e.g., 1 = PANIC WIPE).
-     */
-    external fun triggerSentinelAction(actionType: Int)
+    fun triggerSentinelActionSafe(actionType: Int) {
+        if (!isAvailable) { Log.w(TAG, "triggerSentinelAction skipped: native lib missing"); return }
+        try { triggerSentinelAction(actionType) } catch (t: Throwable) { Log.e(TAG, "Sentinel action failed", t) }
+    }
+
+    /* -------- raw external fns (private — use *Safe wrappers above) -------- */
+
+    private external fun initLogging()
+    private external fun generateIdentity(): String
+    private external fun splitSecret(secret: String, threshold: Int, total: Int): String
+    private external fun computeDcNetContribution(myId: Int, message: String): String
+    private external fun runPrivacyAudit(configJson: String): String
+    private external fun triggerSentinelAction(actionType: Int)
 }

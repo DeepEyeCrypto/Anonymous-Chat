@@ -17,11 +17,11 @@ interface CryptoEngine {
 
 object SignalCryptoEngine : CryptoEngine {
     override fun encryptMessage(message: String, recipientPublicKey: String): String {
-        return SignalBridge.encryptMessage(message, recipientPublicKey)
+        return SignalBridge.encryptMessageSafe(message, recipientPublicKey)
     }
 
     override fun decryptMessage(encryptedMessage: String): String {
-        return SignalBridge.decryptMessage(encryptedMessage)
+        return SignalBridge.decryptMessageSafe(encryptedMessage)
     }
 }
 

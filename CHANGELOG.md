@@ -2,6 +2,21 @@
 
 All notable changes to the **Phantom Net** project will be documented in this file.
 
+## [1.4.5] - 2026-02-20
+
+### Fixed
+
+- **PhantomCore init crash**: `initLogging()` was being called even when `System.loadLibrary("phantom_core")` failed, causing an uncaught `UnsatisfiedLinkError` that killed the process on any screen that touches `PhantomCore`.
+- **Privacy Dashboard composition crash**: `PhantomCore.runPrivacyAudit()` was invoked during Compose `remember{}` — if the native lib wasn't present, the crash happened immediately on navigation, not on a user action.
+- **SignalBridge JNI crash**: raw `external` calls on a library that failed to load cause fatal JNI errors that bypass `try/catch`. Added a `nativeLoaded` guard to throw a catchable `IllegalStateException` instead.
+- All JNI-backed calls now use `*Safe` wrappers that check library availability before touching JNI, returning fallback values or no-ops when the native layer is missing.
+
+### Changed
+
+- `PhantomCore` external functions are now private; all callers use guarded `*Safe()` public API.
+- `SignalBridge` exposes `encryptMessageSafe` / `decryptMessageSafe` with pre-flight guard.
+- Android app version updated to `1.4.5` (`versionCode 7`).
+
 ## [1.4.4] - 2026-02-20
 
 ### Fixed

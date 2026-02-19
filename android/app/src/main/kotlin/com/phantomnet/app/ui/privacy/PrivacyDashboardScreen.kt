@@ -40,16 +40,16 @@ fun PrivacyDashboardScreen(
             }
         """.trimIndent()
         
+        val result = PhantomCore.runPrivacyAuditSafe(configJson)
+        // Simplified parsing for MVP
+        val scoreMatch = """"risk_score":(\d+)""".toRegex().find(result)
+        val score = scoreMatch?.groupValues?.get(1)?.toInt() ?: 50
+        val colorMatch = """"status_color":"(#[A-F0-9]+)"""".toRegex().find(result)
+        val colorStr = colorMatch?.groupValues?.get(1) ?: "#FFD600"
+        
         try {
-            val result = PhantomCore.runPrivacyAudit(configJson)
-            // Simplified parsing for MVP
-            val scoreMatch = """"risk_score":(\d+)""".toRegex().find(result)
-            val score = scoreMatch?.groupValues?.get(1)?.toInt() ?: 50
-            val colorMatch = """"status_color":"(#[A-F0-9]+)"""".toRegex().find(result)
-            val colorStr = colorMatch?.groupValues?.get(1) ?: "#FFD600"
-            
             Pair(score, Color(android.graphics.Color.parseColor(colorStr)))
-        } catch (t: Throwable) {
+        } catch (_: Throwable) {
             Pair(50, Color.Yellow)
         }
     }
@@ -203,7 +203,7 @@ fun PrivacyDashboardScreen(
             
             Button(
                 onClick = {
-                    runCatching { PhantomCore.triggerSentinelAction(1) }
+                    PhantomCore.triggerSentinelActionSafe(1)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF5252)),
