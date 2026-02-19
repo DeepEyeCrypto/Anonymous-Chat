@@ -2,13 +2,13 @@ name: Rust CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 
 jobs:
-  build:
-    name: Check Rust Workspace
+  check:
+    name: Check, Lint & Test
     runs-on: ubuntu-latest
 
     steps:
@@ -19,6 +19,8 @@ jobs:
 
     - name: Set up Rust
       uses: dtolnay/rust-toolchain@stable
+      with:
+        components: clippy
 
     - name: Cache cargo registry & build
       uses: actions/cache@v4
@@ -28,9 +30,20 @@ jobs:
           ~/.cargo/git
           target
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
 
     - name: Check workspace
       run: cargo check --workspace
 
+    - name: Clippy (deny warnings)
+      run: cargo clippy --workspace -- -D warnings
+
     - name: Run tests
       run: cargo test --workspace --lib
+
+    - name: Security audit
+      run: |
+        cargo install cargo-audit --quiet
+        cargo audit
+      continue-on-error: true  # advisory — don't block PRs on upstream CVEs
