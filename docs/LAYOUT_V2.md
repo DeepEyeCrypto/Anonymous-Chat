@@ -33,11 +33,14 @@ App Launch
   └── [Returning?] ──────────→ Main Shell (Bottom Tabs)
                                   ├── 💬 Chats Tab
                                   │     ├── Conversation List
-                                  │     ├── Chat Detail → Contact Info
-                                  │     └── DC-Net Room Detail
+                                  │     ├── Chat Detail (Real E2EE) ──→ Contact Info
+                                  │     ├── DC-Net Room Detail
+                                  │     └── [NEW] Add Contact Flow
+                                  │           ├── QR Scanner
+                                  │           └── My QR Code (Show)
                                   │
                                   ├── 🔍 Discovery Tab
-                                  │     └── Discovery Home (Empty MVP)
+                                  │     └── Discovery Home (PSI Discovery - Phase 2 Alpha)
                                   │
                                   ├── 🔒 Vault Tab
                                   │     └── Vault Home (Empty MVP)
@@ -46,7 +49,7 @@ App Launch
                                         ├── Settings Home
                                         ├── Privacy Dashboard
                                         │     └── Shard Wizard
-                                        └── Identity Detail
+                                        └── Identity Detail (Advanced Keys)
 ```
 
 ---
@@ -131,6 +134,33 @@ App Launch
   - APPLICATION: App Version (1.4.5), Rust Core status (✓/✗)
   - DANGER ZONE: "⚠ WIPE IDENTITY" red button
 - **Wipe flow**: AlertDialog with "Type DELETE to confirm" TextField
+
+### 3.9 Add Contact (Phase 2)
+
+- **Layout**: Top bar with title "Add Contact", Two big action cards:
+  - Card 1: "Scan QR Code" (emerald icon)
+  - Card 2: "My Identity QR" (show your own code)
+- **Manual input**: Text field for "Paste Public Key / Invitation Link"
+- **CTA**: "Connect →" (bold, emerald)
+
+### 3.10 QR Scanner (Phase 2)
+
+- **UX**: Full-screen camera preview with emerald scanner frame
+- **Detection**: Vibration on match + auto-navigation to Add Contact with populated key
+- **Overlay**: "Scan a Phantom Identity QR"
+
+### 3.11 My QR Code (Phase 2)
+
+- **Visual**: Identity QR code centered, large
+- **Details**: Name (optional/local) + Fingerprint below QR
+- **Controls**: "Share Link" (external intent), "Download PDF" (Phase 3)
+- **Security**: "Don't share with untrusted parties" warning
+
+### 3.12 Discovery (Phase 2 Alpha)
+
+- **Visual**: List of "Peers nearby" (simulated or real DHT)
+- **Logic**: Use Private Set Intersection (PSI) to show mutual contacts without leaking address books
+- **Action**: Tap on peer → Send connection request (X3DH handshake)
 
 ---
 

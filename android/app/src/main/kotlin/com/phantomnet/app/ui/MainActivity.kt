@@ -44,6 +44,7 @@ import com.phantomnet.core.PhantomCore
 import com.phantomnet.feature.onboarding.OnboardingScreen
 import com.phantomnet.feature.onboarding.OnboardingState
 import com.phantomnet.feature.onboarding.SplashScreen
+import com.phantomnet.app.ui.contacts.ContactsViewModel
 import com.phantomnet.feature.settings.SettingsScreen
 import com.phantomnet.feature.settings.SettingsUiState
 import kotlinx.coroutines.MainScope
@@ -58,12 +59,14 @@ class MainActivity : ComponentActivity() {
                 listOf(
                     Manifest.permission.BLUETOOTH_SCAN,
                     Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.CAMERA
                 )
             } else {
                 listOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.CAMERA
                 )
             }
 
@@ -228,27 +231,9 @@ private fun MainShell(
         val dhtStatus by NetworkStatus.dhtStatus.collectAsState()
         val meshStatus by NetworkStatus.meshStatus.collectAsState()
 
-        // Mock conversations (will be replaced with DB in next task)
-        val conversations = remember {
-            listOf(
-                Conversation(
-                    id = "1",
-                    contactName = "Alice (Tor)",
-                    lastMessage = "Signal handshake complete. Identity verified.",
-                    lastMessageTimestamp = System.currentTimeMillis(),
-                    unreadCount = 2,
-                    isOnline = true
-                ),
-                Conversation(
-                    id = "2",
-                    contactName = "Bob (DHT)",
-                    lastMessage = "Can you send the architectural blueprints?",
-                    lastMessageTimestamp = System.currentTimeMillis() - 3600000,
-                    unreadCount = 0,
-                    isOnline = false
-                )
-            )
-        }
+        // Real-time conversations from DB
+        val listViewModel: com.phantomnet.app.ui.home.ConversationListViewModel = viewModel()
+        val conversations by listViewModel.conversations.collectAsState()
 
         NavHost(
             navController = navController,
@@ -264,7 +249,7 @@ private fun MainShell(
                     meshStatus = meshStatus,
                     onConversationClick = { id -> navController.navigate("chat/$id") },
                     onRoomClick = { name -> navController.navigate("room/$name") },
-                    onFabClick = { /* future: new chat */ }
+                    onFabClick = { navController.navigate("add_contact") }
                 )
             }
 
@@ -300,6 +285,43 @@ private fun MainShell(
                             onWipeComplete()
                         }
                     }
+                )
+            }
+
+            // ── Phase 2: Contact Management ──
+            composable("add_contact") {
+                val contactsViewModel: ContactsViewModel = viewModel()
+                com.phantomnet.app.ui.contacts.AddContactScreen(
+                    onScanClick = { navController.navigate("qr_scanner") },
+                    onShowMyQrClick = { navController.navigate("my_qr_code") },
+                    onConnectClick = { key ->
+                        contactsViewModel.connectToPeer(key) {
+                            MainScope().launch {
+                                Toast.makeText(context, "Handshake sent to DHT mailbox!", Toast.LENGTH_SHORT).show()
+                                navController.popBackStack()
+                            }
+                        }
+                    },
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable("qr_scanner") {
+                com.phantomnet.app.ui.contacts.QrScannerScreen(
+                    onResult = { result ->
+                        navController.popBackStack()
+                        // navigate to add_contact with manualInput prefilled or just handle it
+                        Toast.makeText(context, "Scanned: $result", Toast.LENGTH_LONG).show()
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable("my_qr_code") {
+                com.phantomnet.app.ui.contacts.MyQrCodeScreen(
+                    identityFingerprint = identityManager.fingerprint ?: "0000",
+                    identityPublicKey = identityManager.publicKeyX25519?.joinToString("") { "%02x".format(it) } ?: "no_key",
+                    onBackClick = { navController.popBackStack() }
                 )
             }
 

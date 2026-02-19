@@ -55,6 +55,9 @@ class PhantomApp : Application() {
             }
 
             startCoreServices()
+            
+            // Phase 2: Background Polling
+            com.phantomnet.app.worker.DhtPollingWorker.schedule(this)
         } catch (t: Throwable) {
             Log.e(TAG, "Fatal error during app initialization, continuing with degraded mode", t)
         }

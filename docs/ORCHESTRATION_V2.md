@@ -7,41 +7,42 @@
 
 ---
 
-## 1. COMPONENT MAP
+## 1. COMPONENT MAP (Phase 2 - Networked)
 
 ```
-┌─────────────────────────────────────────────────┐
-│  UI LAYER (Compose) → ViewModels → UseCases     │
-├─────────────────────────────────────────────────┤
-│  DOMAIN LAYER: Repositories (interfaces), Models │
-├─────────────────────────────────────────────────┤
-│  DATA LAYER: Room/SQLCipher, EncryptedPrefs, JNI │
-├─────────────────────────────────────────────────┤
-│  RUST NATIVE CORE (phantom-core, libsignal-ffi)  │
-└─────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│  UI LAYER (Compose) → ViewModels → UseCases                 │
+├──────────────────────────────┬──────────────────────────────┤
+│  DOMAIN LAYER: Repositories  │  SIGNAL PROTOCOL (E2EE)      │
+│  Interfaces & Models         │  X3DH & Double Ratchet       │
+├──────────────────────────────┼──────────────────────────────┤
+│  DATA LAYER: Room/SQLCipher  │  NETWORK SERVICE (P2P)       │
+│  EncryptedPrefs, JNI Bridge  │  DHT (libp2p), Tor (arti)    │
+└──────────────────────────────┴──────────────────────────────┘
 ```
 
-All local. No server. No cloud. In Phase 1, no network messages.
+Phase 2 moves from **Local-Only** to **P2P Networked**.
 
 ---
 
-## 2. NAVIGATION ROUTES
+## 2. NAVIGATION ROUTES (Expanded)
 
 ```kotlin
 sealed interface PhantomRoute {
+    // Phase 1 (Core)
     @Serializable data object Splash : PhantomRoute
     @Serializable data object OnboardingWelcome : PhantomRoute
-    @Serializable data object OnboardingPromise : PhantomRoute
     @Serializable data object OnboardingIdentity : PhantomRoute
     @Serializable data object ChatsList : PhantomRoute
     @Serializable data class ChatDetail(val conversationId: String) : PhantomRoute
-    @Serializable data class DcNetRoom(val roomName: String) : PhantomRoute
-    @Serializable data object Discovery : PhantomRoute
-    @Serializable data object Vault : PhantomRoute
     @Serializable data object Settings : PhantomRoute
-    @Serializable data object PrivacyDashboard : PhantomRoute
-    @Serializable data object ShardWizard : PhantomRoute
-    @Serializable data object IdentityDetail : PhantomRoute
+    
+    // Phase 2 (Real-Time & Contacts)
+    @Serializable data object AddContact : PhantomRoute
+    @Serializable data object QrScanner : PhantomRoute
+    @Serializable data object MyQrCode : PhantomRoute
+    @Serializable data class ContactInfo(val contactId: String) : PhantomRoute
+    @Serializable data object Discovery : PhantomRoute // Implementation start
 }
 ```
 
@@ -231,4 +232,36 @@ Dependency: `app → feature:* → core:identity → core:database + core:crypto
 | App killed | No action — Room persists, StateFlow reloads on resume |
 
 ---
-*Next: WORLD — CI/CD updates, dependency management, release strategy.*
+
+## 11. E2EE STACK (Phase 2)
+
+### X3DH (Key Exchange)
+
+1. **Prekeys**: On identity creation, Rust core generates a signed prekey and a batch of one-time prekeys.
+2. **Bundle**: These are published to the DHT under the user's fingerprint.
+3. **Handshake**: Initiator fetches bundle → generates ephemeral key → derives initial shared secret → sends first message containing the Signal handshake.
+
+### Double Ratchet
+
+- Implementation via **vodozemac** (Matrix's Rust implementation).
+- Per-message key rotation.
+- **Header encryption**: Prevents revealing the ratchet state to the relay nodes.
+
+---
+
+## 12. DHT RELAY CONTRACT
+
+### Publication
+
+- **Path**: `publisher/fingerprint/mailbox`
+- **Payload**: Encrypted Signal message + nonce.
+- **TTL**: 24 hours (Phase 2), then purged from DHT nodes.
+
+### Retrieval (WorkManager)
+
+- **DhtPollingWorker**: Runs every 15 mins (periodic) or on Firebase-less push (WebSocket heartbeat).
+- **Process**: `poll(mailbox)` → receive blobs → decrypt (Rust) → insert to MessageDao → status=DELIVERED.
+
+---
+
+*Next: WORLD — CI/CD for Native release artifacts, binary size optimization.*
