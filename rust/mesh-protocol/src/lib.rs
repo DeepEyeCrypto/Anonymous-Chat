@@ -29,8 +29,8 @@ pub extern "system" fn Java_com_phantomnet_core_network_MeshService_startMesh(
             Ok(manager) => {
                 match manager.adapters().await {
                     Ok(adapters) => {
-                        if let Some(central) = adapters.into_iter().nth(0) {
-                            if let Ok(_) = central.start_scan(ScanFilter::default()).await {
+                        if let Some(central) = adapters.into_iter().next() {
+                            if central.start_scan(ScanFilter::default()).await.is_ok() {
                                 log::info!("BLE Scan started successfully");
                                 
                                 // Discovery loop
@@ -83,6 +83,11 @@ pub extern "system" fn Java_com_phantomnet_core_network_MeshService_startMesh(
 }
 
 #[no_mangle]
+/// # Safety
+///
+/// Called by the JVM when this native library is loaded. The provided `JavaVM`
+/// handle and `_reserved` pointer come from the JVM runtime and must be valid
+/// per JNI contract for the duration of this function.
 pub unsafe extern "system" fn JNI_OnLoad(vm: JavaVM, _reserved: *mut c_void) -> jint {
     #[cfg(target_os = "android")]
     {

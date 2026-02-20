@@ -97,20 +97,17 @@ impl DhtNode {
             tokio::select! {
                 event = swarm.select_next_some() => match event {
                     SwarmEvent::NewListenAddr { address, .. } => {
-                        if !address.to_string().contains("127.0.0.1") {
-                            current_addr = Some(address.clone());
-                        } else if current_addr.is_none() {
+                        let is_loopback = address.to_string().contains("127.0.0.1");
+                        if !is_loopback || current_addr.is_none() {
                             current_addr = Some(address.clone());
                         }
                     }
-                    SwarmEvent::Behaviour(PhantomBehaviourEvent::Kademlia(kad::Event::OutboundQueryProgressed { result, .. })) => {
-                        match result {
-                            kad::QueryResult::GetRecord(Ok(kad::GetRecordOk::FoundRecord(kad::PeerRecord { record, .. }))) => {
-                                let mut results = get_results().lock().unwrap();
-                                results.insert(record.key.to_vec(), record.value);
-                            }
-                            _ => {}
-                        }
+                    SwarmEvent::Behaviour(PhantomBehaviourEvent::Kademlia(kad::Event::OutboundQueryProgressed {
+                        result: kad::QueryResult::GetRecord(Ok(kad::GetRecordOk::FoundRecord(kad::PeerRecord { record, .. }))),
+                        ..
+                    })) => {
+                        let mut results = get_results().lock().unwrap();
+                        results.insert(record.key.to_vec(), record.value);
                     }
                     _ => {}
                 },

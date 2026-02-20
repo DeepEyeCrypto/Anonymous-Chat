@@ -5,14 +5,17 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.phantomnet.core.database.dao.RoomDao
+import com.phantomnet.core.database.dao.CallLogDao
 import com.phantomnet.core.database.entity.RoomEntity
+import com.phantomnet.core.database.entity.CallLogEntity
 
 @Database(
     entities = [
         PersonaEntity::class,
         ConversationEntity::class,
         MessageEntity::class,
-        RoomEntity::class
+        RoomEntity::class,
+        CallLogEntity::class
     ],
     version = 1,
     exportSchema = false
@@ -22,6 +25,7 @@ abstract class PhantomDatabase : RoomDatabase() {
     abstract fun conversationDao(): ConversationDao
     abstract fun messageDao(): MessageDao
     abstract fun roomDao(): RoomDao
+    abstract fun callLogDao(): CallLogDao
 }
 
 /**

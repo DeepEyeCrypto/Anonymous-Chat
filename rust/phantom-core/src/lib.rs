@@ -9,7 +9,6 @@ use tokio::sync::mpsc;
 
 /// This is the main orchestration layer that ties all cryptographic
 /// and networking engines together for the Android client.
-
 #[no_mangle]
 pub extern "system" fn Java_com_phantomnet_core_PhantomCore_initLogging(
     _env: JNIEnv,
@@ -150,13 +149,10 @@ pub extern "system" fn Java_com_phantomnet_core_PhantomCore_triggerSentinelActio
     };
     let sentinel = phantom_sentinel::LocalSentinel::new(policy);
 
-    match action_type {
-        1 => {
-            // PANIC
-            sentinel.shred_identity();
-            log::error!("CRITICAL: Identity shredded by User Panic.");
-        }
-        _ => {}
+    if action_type == 1 {
+        // PANIC
+        sentinel.shred_identity();
+        log::error!("CRITICAL: Identity shredded by User Panic.");
     }
 }
 #[no_mangle]

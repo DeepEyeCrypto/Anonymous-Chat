@@ -92,3 +92,15 @@ data class RoomEntity(
     val unreadCount: Int,
     val isActive: Boolean
 )
+
+@Entity(tableName = "call_logs")
+data class CallLogEntity(
+    @PrimaryKey
+    val sessionId: String,
+    val conversationId: String,       // FK to contacts/chats
+    val direction: String,            // INCOMING / OUTGOING
+    val durationSec: Int,
+    val timestamp: Long,              // Start time
+    val privacyMode: String,          // FAST/PRIVATE/PARANOID
+    val outcome: String               // COMPLETED / MISSED / REJECTED / FAILED
+)

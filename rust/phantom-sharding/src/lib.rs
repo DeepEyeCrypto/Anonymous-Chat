@@ -28,8 +28,8 @@ impl ShardingManager {
             // where a0 is the secret byte.
             let mut poly = vec![gf256(0); threshold];
             poly[0] = gf256(byte);
-            for j in 1..threshold {
-                poly[j] = gf256(rng.gen());
+            for coeff in poly.iter_mut().skip(1) {
+                *coeff = gf256(rng.gen());
             }
 
             // Evaluate the polynomial for x = 1, 2, ..., total
@@ -62,7 +62,7 @@ impl ShardingManager {
         let len = shards[0].y.len();
         let mut secret = vec![0u8; len];
 
-        for i in 0..len {
+        for (i, out_byte) in secret.iter_mut().enumerate().take(len) {
             let mut val = gf256(0);
 
             for shard_j in shards {
@@ -80,7 +80,7 @@ impl ShardingManager {
                 }
                 val += yj * li;
             }
-            secret[i] = val.0;
+            *out_byte = val.0;
         }
 
         secret

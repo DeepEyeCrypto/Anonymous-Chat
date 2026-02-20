@@ -2,8 +2,6 @@ use chacha20poly1305::{
     aead::{Aead, KeyInit},
     ChaCha20Poly1305, Nonce,
 };
-use rand::RngCore;
-use x25519_dalek::{PublicKey, StaticSecret};
 
 /// A simplified Sphinx packet for multi-hop onion routing.
 /// Provides bit-flipping security and fixed-size integrity.

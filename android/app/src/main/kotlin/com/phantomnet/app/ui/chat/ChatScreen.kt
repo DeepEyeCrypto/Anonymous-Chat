@@ -17,9 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.phantomnet.core.database.model.Message
-import com.phantomnet.app.ui.theme.HackerGreen
-import com.phantomnet.app.ui.theme.DarkBackground
+import com.phantomnet.app.ui.call.CallOrchestratorScreen
 import com.phantomnet.app.ui.call.PreCallPrivacyPanel
 import com.phantomnet.app.ui.call.PrivacyMode
 
@@ -34,6 +32,20 @@ fun ChatScreen(
     var messageText by remember { mutableStateOf("") }
     var showPreCallPanel by remember { mutableStateOf(false) }
     var isVideoCallRequest by remember { mutableStateOf(false) }
+    
+    // Call orchestration local override
+    var activeCallMode by remember { mutableStateOf<PrivacyMode?>(null) }
+    var activeCallIsVideo by remember { mutableStateOf(false) }
+
+    if (activeCallMode != null) {
+        CallOrchestratorScreen(
+            contactName = contactName,
+            initialMode = activeCallMode!!,
+            isVideo = activeCallIsVideo,
+            onEndCall = { activeCallMode = null }
+        )
+        return // Early return block underlying Chat rendering
+    }
 
     Scaffold(
         topBar = {
@@ -112,7 +124,8 @@ fun ChatScreen(
             isVideoCall = isVideoCallRequest,
             onConfirm = { privacyMode ->
                 showPreCallPanel = false
-                // TODO: Launch OutgoingCallScreen with privacyMode and isVideoCallRequest
+                activeCallMode = privacyMode
+                activeCallIsVideo = isVideoCallRequest
             },
             onCancel = { showPreCallPanel = false }
         )

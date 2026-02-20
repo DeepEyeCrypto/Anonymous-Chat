@@ -17,6 +17,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
@@ -33,6 +36,11 @@
             android:exported="true"
             android:theme="@style/Theme.PhantomNet">
         </activity>
+
+        <service
+            android:name=".service.CallService"
+            android:foregroundServiceType="phoneCall|microphone"
+            android:exported="false" />
 
         <!-- Launcher Alias: Normal Mode -->
         <activity-alias

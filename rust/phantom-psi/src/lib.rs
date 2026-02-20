@@ -11,6 +11,12 @@ pub struct PsiClient {
     secret_scalar: Scalar,
 }
 
+impl Default for PsiClient {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PsiClient {
     pub fn new() -> Self {
         Self {
@@ -59,6 +65,12 @@ impl PsiClient {
 /// Simulated Directory Service for testing PSI.
 pub struct PsiDirectory {
     secret_scalar: Scalar,
+}
+
+impl Default for PsiDirectory {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl PsiDirectory {

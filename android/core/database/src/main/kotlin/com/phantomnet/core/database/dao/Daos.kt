@@ -7,6 +7,8 @@ import androidx.room.Query
 import com.phantomnet.core.database.entity.PersonaEntity
 import com.phantomnet.core.database.entity.ConversationEntity
 import com.phantomnet.core.database.entity.MessageEntity
+import com.phantomnet.core.database.entity.RoomEntity
+import com.phantomnet.core.database.entity.CallLogEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -95,5 +97,20 @@ interface MessageDao {
     suspend fun deleteExpired(now: Long = System.currentTimeMillis())
 
     @Query("DELETE FROM messages")
+    suspend fun deleteAll()
+}
+
+@Dao
+interface CallLogDao {
+    @Query("SELECT * FROM call_logs WHERE conversationId = :convId ORDER BY timestamp DESC")
+    fun getLogsForConversation(convId: String): Flow<List<CallLogEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCallLog(log: CallLogEntity)
+
+    @Query("UPDATE call_logs SET durationSec = :durationSec, outcome = :outcome WHERE sessionId = :sessionId")
+    suspend fun updateCallEnd(sessionId: String, durationSec: Int, outcome: String)
+
+    @Query("DELETE FROM call_logs")
     suspend fun deleteAll()
 }
