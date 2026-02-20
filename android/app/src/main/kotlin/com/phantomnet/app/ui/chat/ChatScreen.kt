@@ -8,6 +8,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import com.phantomnet.core.database.model.Message
 import com.phantomnet.app.ui.theme.HackerGreen
 import com.phantomnet.app.ui.theme.DarkBackground
+import com.phantomnet.app.ui.call.PreCallPrivacyPanel
+import com.phantomnet.app.ui.call.PrivacyMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +32,8 @@ fun ChatScreen(
     onBackClick: () -> Unit
 ) {
     var messageText by remember { mutableStateOf("") }
+    var showPreCallPanel by remember { mutableStateOf(false) }
+    var isVideoCallRequest by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -38,7 +44,21 @@ fun ChatScreen(
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground, titleContentColor = Color.White, navigationIconContentColor = HackerGreen)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground, titleContentColor = Color.White, navigationIconContentColor = HackerGreen),
+                actions = {
+                    IconButton(onClick = { 
+                        isVideoCallRequest = false
+                        showPreCallPanel = true 
+                    }) {
+                        Icon(imageVector = Icons.Default.Call, contentDescription = "Audio Call", tint = HackerGreen)
+                    }
+                    IconButton(onClick = { 
+                        isVideoCallRequest = true
+                        showPreCallPanel = true 
+                    }) {
+                        Icon(imageVector = Icons.Default.Videocam, contentDescription = "Video Call", tint = HackerGreen)
+                    }
+                }
             )
         },
         bottomBar = {
@@ -84,6 +104,18 @@ fun ChatScreen(
                 MessageBubble(message = message)
             }
         }
+    }
+
+    if (showPreCallPanel) {
+        PreCallPrivacyPanel(
+            contactName = contactName,
+            isVideoCall = isVideoCallRequest,
+            onConfirm = { privacyMode ->
+                showPreCallPanel = false
+                // TODO: Launch OutgoingCallScreen with privacyMode and isVideoCallRequest
+            },
+            onCancel = { showPreCallPanel = false }
+        )
     }
 }
 
