@@ -41,7 +41,8 @@ data class Conversation(
     val lastMessageTimestamp: Long,
     val unreadCount: Int = 0,
     val isOnline: Boolean = false,
-    val routingMode: RoutingMode = RoutingMode.DHT
+    val routingMode: RoutingMode = RoutingMode.DHT,
+    val sharedSecret: ByteArray? = null // Phase 2: Signal shared secret
 )
 
 /**
@@ -56,11 +57,23 @@ enum class MessageStatus {
  */
 data class Message(
     val id: String,
-    val conversationId: String,
     val senderId: String,
     val content: String,
     val timestamp: Long,
     val isMe: Boolean,
     val status: MessageStatus = MessageStatus.SENT,
     val expiresAt: Long? = null
+)
+
+/**
+ * Domain model for an anonymous Room (DC-Net or MLS).
+ */
+data class Room(
+    val id: String,
+    val name: String,
+    val type: String,
+    val lastMessage: String,
+    val lastMessageTimestamp: Long,
+    val unreadCount: Int = 0,
+    val isActive: Boolean = true
 )

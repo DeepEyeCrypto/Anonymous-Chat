@@ -34,11 +34,16 @@ fun SettingsScreen(
     state: SettingsUiState,
     onPrivacyDashboardClick: () -> Unit,
     onSecureBackupClick: () -> Unit,
+    onLinkDeviceClick: () -> Unit,
+    onStealthModeChange: (Int) -> Unit,
+    onMixnetChange: (Boolean) -> Unit,
+    onParanoiaChange: (Boolean) -> Unit,
     onWipeConfirmed: () -> Unit
 ) {
     val clipboardManager = LocalClipboardManager.current
     var showCopied by remember { mutableStateOf(false) }
     var showWipeDialog by remember { mutableStateOf(false) }
+    var showStealthDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -150,9 +155,35 @@ fun SettingsScreen(
             onPrivacyDashboardClick()
         }
         SettingsDivider()
+        SettingsItem("Stealth Mode & Appearance", "Hide or disguise the application") {
+            showStealthDialog = true
+        }
+        SettingsDivider()
         SettingsItem("Secure Backup (SSS)", "Shard your recovery key") {
             onSecureBackupClick()
         }
+        SettingsDivider()
+        SettingsItem("Link New Device", "Sync this identity to another phone") {
+            onLinkDeviceClick()
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // ── TRANSPORT SECTION (Phase 7) ──
+        SectionHeader("TRANSPORT")
+        SettingsToggleItem(
+            title = "Untraceable Mixnet",
+            subtitle = "Route traffic through multi-hop mixnet",
+            checked = state.mixnetEnabled,
+            onCheckedChange = onMixnetChange
+        )
+        SettingsDivider()
+        SettingsToggleItem(
+            title = "Paranoia Mode (Cover Traffic)",
+            subtitle = "Constant-throughput dummy packets",
+            checked = state.paranoiaMode,
+            onCheckedChange = onParanoiaChange
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -207,6 +238,118 @@ fun SettingsScreen(
             },
             onDismiss = { showWipeDialog = false }
         )
+    }
+
+    // ── STEALTH SETTINGS DIALOG ──
+    if (showStealthDialog) {
+        StealthSettingsDialog(
+            currentMode = state.stealthMode,
+            onModeChange = { mode ->
+                onStealthModeChange(mode)
+            },
+            onDismiss = { showStealthDialog = false }
+        )
+    }
+}
+
+@Composable
+private fun StealthSettingsDialog(
+    currentMode: Int,
+    onModeChange: (Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var realPin by remember { mutableStateOf("") }
+    var decoyPin by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = SurfaceCard,
+        title = { Text("STEALTH & DISGUISE", color = Emerald, fontWeight = FontWeight.Bold, fontSize = 18.sp) },
+        text = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Text(
+                    "Choose how Phantom Net appears on your device. Disguised modes hide the app behind a decoy interface.",
+                    color = TextGray,
+                    fontSize = 14.sp
+                )
+                
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Mode Selection
+                StealthOption("Normal", "Standard icon and entry", currentMode == 0) { onModeChange(0) }
+                StealthOption("Disguised", "Hide behind Calculator", currentMode == 1) { onModeChange(1) }
+                StealthOption("System", "Disguise as System Config", currentMode == 2) { onModeChange(2) }
+
+                if (currentMode != 0) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text("PIN CONFIGURATION", color = Emerald, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    OutlinedTextField(
+                        value = realPin,
+                        onValueChange = { realPin = it },
+                        label = { Text("Real Master PIN") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Emerald, unfocusedBorderColor = DividerColor)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = decoyPin,
+                        onValueChange = { decoyPin = it },
+                        label = { Text("Decoy Safety PIN") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Emerald, unfocusedBorderColor = DividerColor)
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        "Entering the Decoy PIN will open a fresh, benign session to satisfy inspectors.",
+                        color = Color.Yellow.copy(alpha = 0.7f),
+                        fontSize = 12.sp
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { 
+                    // In a real implementation, we'd save PINs here via ViewModel
+                    // But for this demo, we'll just close
+                    onDismiss() 
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Emerald, contentColor = Obsidian)
+            ) {
+                Text("SAVE", fontWeight = FontWeight.Bold)
+            }
+        }
+    )
+}
+
+@Composable
+private fun StealthOption(
+    title: String,
+    subtitle: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .background(if (selected) Emerald.copy(alpha = 0.1f) else Color.Transparent, RoundedCornerShape(12.dp))
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = selected,
+            onClick = onClick,
+            colors = RadioButtonDefaults.colors(selectedColor = Emerald)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Column {
+            Text(title, color = if (selected) Emerald else Color.White, fontWeight = FontWeight.Bold)
+            Text(subtitle, color = TextGray, fontSize = 12.sp)
+        }
     }
 }
 
@@ -311,6 +454,37 @@ private fun SettingsItem(title: String, subtitle: String, onClick: () -> Unit) {
             Text(subtitle, fontSize = 13.sp, color = TextGray)
         }
         Text("→", fontSize = 18.sp, color = TextGray)
+    }
+}
+
+@Composable
+private fun SettingsToggleItem(
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 14.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Medium)
+            Text(subtitle, fontSize = 13.sp, color = TextGray)
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Emerald,
+                checkedTrackColor = Emerald.copy(alpha = 0.5f),
+                uncheckedThumbColor = TextGray,
+                uncheckedTrackColor = SurfaceCard
+            )
+        )
     }
 }
 

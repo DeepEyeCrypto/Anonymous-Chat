@@ -18,6 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
 
 private val Emerald = Color(0xFF00E676)
 private val Obsidian = Color(0xFF0B0E11)
@@ -119,8 +121,16 @@ fun MyQrCodeScreen(
 
         Spacer(modifier = Modifier.weight(0.2f))
 
+        val context = LocalContext.current
+
         Button(
-            onClick = { /* Future: share intent */ },
+            onClick = { 
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, "Connect with me on Phantom Net: phantom://connect?key=$identityPublicKey")
+                }
+                context.startActivity(Intent.createChooser(shareIntent, "Share Identity"))
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

@@ -33,6 +33,7 @@ private val TextGray = Color(0xFF8B949E)
 fun OnboardingScreen(
     creationState: IdentityCreationState,
     onGenerateIdentity: () -> Unit,
+    onImport: () -> Unit,
     onSkip: () -> Unit,
     onComplete: () -> Unit
 ) {
@@ -61,7 +62,8 @@ fun OnboardingScreen(
                 1 -> PrivacyPromisePage()
                 2 -> IdentityCreationPage(
                     state = creationState,
-                    onGenerate = onGenerateIdentity
+                    onGenerate = onGenerateIdentity,
+                    onImport = onImport
                 )
             }
         }
@@ -254,7 +256,8 @@ private fun FeatureRow(emoji: String, label: String) {
 @Composable
 private fun IdentityCreationPage(
     state: IdentityCreationState,
-    onGenerate: () -> Unit
+    onGenerate: () -> Unit,
+    onImport: () -> Unit
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "fp_pulse")
     val borderAlpha by infiniteTransition.animateFloat(
@@ -402,15 +405,17 @@ private fun IdentityCreationPage(
             }
         }
 
-        // Error message
-        if (state is IdentityCreationState.Error) {
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                state.message,
-                fontSize = 13.sp,
-                color = Color(0xFFFF5252),
-                textAlign = TextAlign.Center
-            )
+        if (state is IdentityCreationState.Idle || state is IdentityCreationState.Error) {
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedButton(
+                onClick = onImport,
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                border = org.compose.foundation.BorderStroke(1.dp, Emerald),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Emerald)
+            ) {
+                Text("Sync from other device", fontWeight = FontWeight.Bold)
+            }
         }
     }
 }

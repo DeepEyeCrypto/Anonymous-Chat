@@ -103,7 +103,7 @@ impl DhtNode {
                             current_addr = Some(address.clone());
                         }
                     }
-                    SwarmEvent::Behaviour(PhantomBehaviourEvent::Kademlia(kad::Event::QueryResult { result, .. })) => {
+                    SwarmEvent::Behaviour(PhantomBehaviourEvent::Kademlia(kad::Event::OutboundQueryProgressed { result, .. })) => {
                         match result {
                             kad::QueryResult::GetRecord(Ok(kad::GetRecordOk::FoundRecord(kad::PeerRecord { record, .. }))) => {
                                 let mut results = get_results().lock().unwrap();

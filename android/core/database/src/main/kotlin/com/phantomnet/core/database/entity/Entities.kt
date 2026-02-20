@@ -13,6 +13,8 @@ data class PersonaEntity(
     val publicKeyKyber: ByteArray,
     val privateKeyEncrypted: ByteArray,
     val fingerprint: String,
+    val prekeyBundleJson: String?, // Phase 2: Signal X3DH public bundle
+    val secretBundleJson: String?, // Phase 5: Signal X3DH secret bundle
     val createdAt: Long,
     val isActive: Boolean
 ) {
@@ -36,7 +38,8 @@ data class ConversationEntity(
     val lastMessageTimestamp: Long,
     val unreadCount: Int,
     val isOnline: Boolean,
-    val routingMode: String  // "ONION" | "DHT" | "MESH" | "DCNET"
+    val routingMode: String,  // "ONION" | "DHT" | "MESH" | "DCNET"
+    val sharedSecret: ByteArray? = null // Phase 2: Signal shared secret
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -77,3 +80,15 @@ data class MessageEntity(
 
     override fun hashCode(): Int = id.hashCode()
 }
+@Entity(tableName = "rooms")
+data class RoomEntity(
+    @PrimaryKey
+    val id: String,
+    val name: String,
+    val type: String, // "DC_NET" | "MLS_GROUP"
+    val sharedSecretsJson: String, // Map<OtherParticipantId, Secret>
+    val lastMessagePreview: String,
+    val lastMessageTimestamp: Long,
+    val unreadCount: Int,
+    val isActive: Boolean
+)

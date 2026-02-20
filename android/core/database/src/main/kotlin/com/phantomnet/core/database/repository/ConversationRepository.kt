@@ -34,7 +34,7 @@ class ConversationRepository(private val db: PhantomDatabase) {
             conversationId = conversationId,
             senderId = "me",
             contentPlaintext = content,
-            contentCiphertext = null, // simplified for now
+            contentCiphertext = null,
             timestamp = now,
             isMe = true,
             status = "SENDING",
@@ -43,8 +43,18 @@ class ConversationRepository(private val db: PhantomDatabase) {
 
         db.messageDao().insert(message)
         db.conversationDao().updateLastMessage(conversationId, content, now, false)
-        
-        // Push logic will be handled by the caller/Viewmodel using MailboxManager
+    }
+
+    fun getConversation(id: String): Flow<Conversation?> {
+        return db.conversationDao().getById(id).map { it?.toDomain() }
+    }
+
+    suspend fun getConversationSync(id: String): Conversation? {
+        return db.conversationDao().getByIdSync(id)?.toDomain()
+    }
+
+    suspend fun updateSharedSecret(conversationId: String, secret: ByteArray) {
+        db.conversationDao().updateSharedSecret(conversationId, secret)
     }
 
     private fun ConversationEntity.toDomain() = Conversation(
@@ -55,7 +65,8 @@ class ConversationRepository(private val db: PhantomDatabase) {
         lastMessageTimestamp = lastMessageTimestamp,
         unreadCount = unreadCount,
         isOnline = isOnline,
-        routingMode = RoutingMode.valueOf(routingMode)
+        routingMode = RoutingMode.valueOf(routingMode),
+        sharedSecret = sharedSecret
     )
 
     private fun MessageEntity.toDomain() = Message(

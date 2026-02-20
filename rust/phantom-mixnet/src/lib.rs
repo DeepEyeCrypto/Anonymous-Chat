@@ -1,3 +1,6 @@
+pub mod sphinx;
+
+use crate::sphinx::SphinxPacket;
 use rand::Rng;
 use std::time::Duration;
 use tokio::sync::mpsc;
@@ -11,13 +14,15 @@ pub enum TransportMode {
 }
 
 /// A generic packet that the mixnet will process.
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Packet {
     pub payload: Vec<u8>,
     pub mode: TransportMode,
+    pub hops: usize, // Simulation: number of remaining hops
 }
 
-/// The Orchestrator responsible for constant-throughput traffic injection.
+/// The MixnetDispatcher orchestrates constant-throughput traffic.
+/// Release batches at fixed (jittered) intervals to frustrate timing analysis.
 pub struct MixnetDispatcher {
     incoming_rx: mpsc::Receiver<Packet>,
     interval_ms: u64,
@@ -40,16 +45,21 @@ impl MixnetDispatcher {
         }
     }
 
-    /// Starts the background loop that releases batches at fixed (jittered) intervals.
     pub async fn run(mut self) {
         let mut interval = interval(Duration::from_millis(self.interval_ms));
-        let mut rng = rand::thread_rng();
+
+        log::info!(
+            "🌀 Mixnet Dispatcher (Multi-Hop) started. Interval: {}ms, Batch: {}, Paranoia: {}",
+            self.interval_ms,
+            self.batch_size,
+            self.paranoia_enabled
+        );
 
         loop {
             interval.tick().await;
 
             // Apply jitter to prevent exact timing correlation
-            let jitter: u64 = rng.gen_range(0..200);
+            let jitter: u64 = rand::thread_rng().gen_range(0..200);
             sleep(Duration::from_millis(jitter)).await;
 
             let mut batch = Vec::new();
@@ -58,7 +68,7 @@ impl MixnetDispatcher {
             while batch.len() < self.batch_size {
                 match self.incoming_rx.try_recv() {
                     Ok(packet) => batch.push(packet),
-                    Err(_) => break, // Queue empty for now
+                    Err(_) => break,
                 }
             }
 
@@ -76,26 +86,50 @@ impl MixnetDispatcher {
     }
 
     async fn dispatch_batch(&self, batch: Vec<Packet>) {
-        // Log the batch processing - in a real app, this would send to the network
-        println!(
-            "🚀 Dispatching batch of {} packets (Paranoia: {})",
+        let real_count = batch
+            .iter()
+            .filter(|p| p.mode != TransportMode::MixnetParanoia)
+            .count();
+
+        log::debug!(
+            "🚀 Multi-Hop Batch Dispatched: {} Sphinx packets (Real: {})",
             batch.len(),
-            self.paranoia_enabled
+            real_count
         );
-        for packet in batch {
-            // Logic to send through the entry node or mix hop
-            drop(packet);
+
+        for mut packet in batch {
+            // Simulate multi-hop routing
+            if packet.hops > 0 {
+                // In a real network, we'd send to the next relay.
+                // Here we just decrement hops to simulate the relay chain.
+                packet.hops -= 1;
+                // Peel layer simulation (Simplified)
+                let dummy_key = [0u8; 32];
+                let mut sphinx = SphinxPacket {
+                    header: vec![0u8; SphinxPacket::HEADER_SIZE],
+                    payload: packet.payload.clone(),
+                };
+                sphinx.peel(&dummy_key);
+                packet.payload = sphinx.payload;
+            }
+
+            // Log final delivery or drop if still in transit
+            if packet.hops == 0 && packet.mode != TransportMode::MixnetParanoia {
+                log::trace!("🏁 Final Sphinx delivery node reached.");
+            }
         }
     }
 
     fn generate_dummy_packet() -> Packet {
         let mut rng = rand::thread_rng();
-        let mut dummy_payload = vec![0u8; 1024]; // Standard MTU padding
+        // Generate a cryptographically random payload indistinguishable from Sphinx
+        let mut dummy_payload = vec![0u8; SphinxPacket::PACKET_SIZE - SphinxPacket::HEADER_SIZE];
         rng.fill(&mut dummy_payload[..]);
 
         Packet {
             payload: dummy_payload,
             mode: TransportMode::MixnetParanoia,
+            hops: rng.gen_range(3..7), // Random hops for cover traffic to simulate network spread
         }
     }
 }

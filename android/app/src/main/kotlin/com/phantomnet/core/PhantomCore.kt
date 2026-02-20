@@ -46,6 +46,11 @@ object PhantomCore {
         return try { computeDcNetContribution(myId, message) } catch (t: Throwable) { "error: ${t.message}" }
     }
 
+    fun aggregateDcNetContributionsSafe(contributions: Array<String>): String {
+        if (!isAvailable) return "DC-Net aggregation unavailable"
+        return try { aggregateDcNetContributions(contributions) } catch (t: Throwable) { "error: ${t.message}" }
+    }
+
     fun runPrivacyAuditSafe(configJson: String): String {
         if (!isAvailable) return """{"risk_score":50,"status_color":"#FFD600","note":"native lib missing"}"""
         return try { runPrivacyAudit(configJson) } catch (t: Throwable) { """{"risk_score":50,"status_color":"#FFD600","error":"${t.message}"}""" }
@@ -56,12 +61,31 @@ object PhantomCore {
         try { triggerSentinelAction(actionType) } catch (t: Throwable) { Log.e(TAG, "Sentinel action failed", t) }
     }
 
+    fun runPsiDiscoverySafe(localIdentifiers: Array<String>, remoteBlinded: Array<String>): String {
+        if (!isAvailable) return "Discovery unavailable"
+        return try { runPsiDiscovery(localIdentifiers, remoteBlinded) } catch (t: Throwable) { "error: ${t.message}" }
+    }
+
+    fun initMixnetSafe(intervalMs: Long = 1000, batchSize: Int = 5, paranoia: Boolean = true) {
+        if (!isAvailable) return
+        try { initMixnet(intervalMs, batchSize, paranoia) } catch (t: Throwable) { Log.e(TAG, "Mixnet init failed", t) }
+    }
+
+    fun sendMixnetPacketSafe(payload: String) {
+        if (!isAvailable) return
+        try { sendMixnetPacket(payload) } catch (t: Throwable) { Log.e(TAG, "Mixnet send failed", t) }
+    }
+
     /* -------- raw external fns (private — use *Safe wrappers above) -------- */
 
     private external fun initLogging()
     private external fun generateIdentity(): String
     private external fun splitSecret(secret: String, threshold: Int, total: Int): String
     private external fun computeDcNetContribution(myId: Int, message: String): String
+    private external fun aggregateDcNetContributions(contributions: Array<String>): String
     private external fun runPrivacyAudit(configJson: String): String
     private external fun triggerSentinelAction(actionType: Int)
+    private external fun runPsiDiscovery(local: Array<String>, remote: Array<String>): String
+    private external fun initMixnet(intervalMs: Long, batchSize: Int, paranoia: Boolean)
+    private external fun sendMixnetPacket(payload: String)
 }

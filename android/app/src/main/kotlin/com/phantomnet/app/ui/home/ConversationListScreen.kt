@@ -25,15 +25,18 @@ import com.phantomnet.app.ui.theme.HackerGreen
 import com.phantomnet.app.ui.theme.SignalPurple
 import com.phantomnet.app.ui.theme.TorOnion
 
+import com.phantomnet.core.database.model.Room
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConversationListScreen(
     conversations: List<Conversation>,
+    rooms: List<Room>,
     torStatus: String,
     dhtStatus: String,
     meshStatus: String,
     onConversationClick: (String) -> Unit,
-    onRoomClick: (String) -> Unit,
+    onRoomClick: (String, String) -> Unit, // id, name
     onFabClick: () -> Unit
 ) {
     Scaffold(
@@ -69,28 +72,20 @@ fun ConversationListScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                item {
-                    Text(
-                        "UNTRACEABLE ROOMS (DC-NET)",
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = HackerGreen
-                    )
-                }
-                
-                item {
-                    ConversationItem(
-                        conversation = Conversation(
-                            id = "dc-room-1",
-                            contactName = "Whistleblower Room",
-                            lastMessage = "Status: Protocol XOR-sum active",
-                            lastMessageTimestamp = System.currentTimeMillis(),
-                            unreadCount = 0,
-                            isOnline = true
-                        ),
-                        onClick = { onRoomClick("Whistleblower Room") }
-                    )
-                    Divider(color = Color.DarkGray, thickness = 0.5.dp)
+                if (rooms.isNotEmpty()) {
+                    item {
+                        Text(
+                            "UNTRACEABLE ROOMS (DC-NET)",
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = HackerGreen
+                        )
+                    }
+                    
+                    items(rooms) { room ->
+                        RoomItem(room = room, onClick = { onRoomClick(room.id, room.name) })
+                        Divider(color = Color.DarkGray, thickness = 0.5.dp)
+                    }
                 }
 
                 item {
@@ -107,6 +102,37 @@ fun ConversationListScreen(
                     Divider(color = Color.DarkGray, thickness = 0.5.dp)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun RoomItem(room: Room, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape)
+                .background(HackerGreen),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = room.name.take(1).uppercase(),
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(room.name, style = MaterialTheme.typography.titleMedium, color = Color.White, fontWeight = FontWeight.Bold)
+            Text(room.lastMessage, style = MaterialTheme.typography.bodyMedium, color = Color.Gray, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }

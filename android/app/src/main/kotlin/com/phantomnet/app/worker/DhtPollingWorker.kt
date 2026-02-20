@@ -48,7 +48,16 @@ class DhtPollingWorker(
         val persona = identityManager.observePersona()?.first()
         if (persona != null) {
             Log.d(TAG, "Refreshing DHT identity for ${persona.fingerprint}")
-            MailboxManager.publishIdentity(persona.fingerprint, persona.publicKeyX25519)
+            // Fetch the bundle from DB (cached in persona object)
+            // Note: In a real app, we might want to refresh OPKs here too.
+            val db = identityManager.getDatabase()
+            val entity = db?.personaDao()?.getActivePersona()?.first()
+            
+            MailboxManager.publishIdentity(
+                persona.fingerprint, 
+                persona.publicKeyX25519,
+                entity?.prekeyBundleJson
+            )
             
             // 2. Poll Mailbox
             Log.d(TAG, "Polling DHT mailbox for ${persona.fingerprint}")

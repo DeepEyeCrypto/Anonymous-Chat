@@ -9,7 +9,8 @@ import java.util.Base64
 @Serializable
 data class IdentityBundle(
     val fingerprint: String,
-    val publicKeyX25519: String // Base64
+    val publicKeyX25519: String, // Identity Key (Base64)
+    val prekeyBundleJson: String? = null // Phase 2: Signal X3DH material
 )
 
 /**
@@ -22,14 +23,15 @@ object MailboxManager {
     /**
      * Publish our identity to the DHT so others can find us by fingerprint.
      */
-    fun publishIdentity(fingerprint: String, publicKey: ByteArray) {
+    fun publishIdentity(fingerprint: String, publicKey: ByteArray, prekeyBundleJson: String? = null) {
         val bundle = IdentityBundle(
             fingerprint = fingerprint,
-            publicKeyX25519 = Base64.getEncoder().encodeToString(publicKey)
+            publicKeyX25519 = Base64.getEncoder().encodeToString(publicKey),
+            prekeyBundleJson = prekeyBundleJson
         )
         val json = Json.encodeToString(bundle)
         DhtService.putValue("id:$fingerprint", json)
-        Log.i(TAG, "Published identity to DHT for $fingerprint")
+        Log.i(TAG, "Published identity to DHT for $fingerprint (X3DH: ${prekeyBundleJson != null})")
     }
 
     /**
@@ -57,11 +59,18 @@ object MailboxManager {
     /**
      * Push an encrypted message to a peer's DHT mailbox.
      */
-    fun postMessage(recipientFingerprint: String, encryptedPayload: String) {
-        // Mailbox keys are derived from the fingerprint to prevent simple enumeration
-        // but are public enough for a peer to 'put'.
-        DhtService.putValue("mb:$recipientFingerprint", encryptedPayload)
-        Log.i(TAG, "Message posted to mailbox mb:$recipientFingerprint")
+    fun postMessage(recipientFingerprint: String, encryptedPayload: String, useMixnet: Boolean = false) {
+        if (useMixnet) {
+            // Phase 7: Route through the Untraceable Mixnet
+            com.phantomnet.core.PhantomCore.sendMixnetPacketSafe(
+                "mb:$recipientFingerprint|$encryptedPayload"
+            )
+            Log.i(TAG, "Message routed through Mixnet for mb:$recipientFingerprint")
+        } else {
+            // Direct DHT put
+            DhtService.putValue("mb:$recipientFingerprint", encryptedPayload)
+            Log.i(TAG, "Message posted directly to DHT mb:$recipientFingerprint")
+        }
     }
 
     /**
@@ -77,5 +86,37 @@ object MailboxManager {
     fun pollMyMessages(myFingerprint: String): String? {
         val payload = DhtService.pollValue("mb:$myFingerprint")
         return if (payload.isEmpty()) null else payload
+    }
+
+    /**
+     * Post a DC-Net contribution to a shared room channel.
+     * To avoid collisions, we index by participant ID.
+     */
+    fun postRoomContribution(roomId: String, participantId: Int, contribution: String) {
+        DhtService.putValue("rm:$roomId:$participantId", contribution)
+        Log.d(TAG, "Contribution posted for room $roomId by participant $participantId")
+    }
+
+    /**
+     * Start fetching contributions for all participants in a room.
+     */
+    fun fetchRoomContributions(roomId: String, participantCount: Int) {
+        for (i in 0 until participantCount) {
+            DhtService.getValue("rm:$roomId:$i")
+        }
+    }
+
+    /**
+     * Poll for all contributions in a room.
+     */
+    fun pollRoomContributions(roomId: String, participantCount: Int): List<String> {
+        val results = mutableListOf<String>()
+        for (i in 0 until participantCount) {
+            val valStr = DhtService.pollValue("rm:$roomId:$i")
+            if (valStr.isNotEmpty()) {
+                results.add(valStr)
+            }
+        }
+        return results
     }
 }

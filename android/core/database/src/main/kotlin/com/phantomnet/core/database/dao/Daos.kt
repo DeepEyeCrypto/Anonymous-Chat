@@ -59,10 +59,25 @@ interface ConversationDao {
 }
 
 @Dao
+interface RoomDao {
+    @Query("SELECT * FROM rooms ORDER BY lastMessageTimestamp DESC")
+    fun getAll(): Flow<List<RoomEntity>>
+
+    @Query("SELECT * FROM rooms WHERE id = :id")
+    fun getById(id: String): Flow<RoomEntity?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(room: RoomEntity)
+
+    @Query("DELETE FROM rooms")
+    suspend fun deleteAll()
+}
+
+@Dao
 interface MessageDao {
 
-    @Query("SELECT * FROM messages WHERE conversationId = :convId ORDER BY timestamp DESC")
-    fun getForConversation(convId: String): Flow<List<MessageEntity>>
+    @Query("SELECT * FROM messages WHERE conversationId = :id OR conversationId = :id ORDER BY timestamp DESC")
+    fun getForContext(id: String): Flow<List<MessageEntity>>
 
     @Query("SELECT * FROM messages WHERE conversationId = :convId ORDER BY timestamp DESC LIMIT :limit")
     fun getRecentForConversation(convId: String, limit: Int): Flow<List<MessageEntity>>

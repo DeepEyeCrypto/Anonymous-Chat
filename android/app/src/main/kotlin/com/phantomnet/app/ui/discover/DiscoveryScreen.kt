@@ -6,8 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -25,7 +24,12 @@ private val SurfaceCard = Color(0xFF1C1F26)
 private val TextGray = Color(0xFF8B949E)
 
 @Composable
-fun DiscoveryScreen() {
+fun DiscoveryScreen(
+    viewModel: DiscoveryViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
+    val state by viewModel.state.collectAsState()
+    val isScanning = state is DiscoveryState.Scanning
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,53 +46,98 @@ fun DiscoveryScreen() {
             modifier = Modifier.padding(top = 16.dp, bottom = 48.dp)
         )
 
-        Spacer(modifier = Modifier.weight(0.3f))
+        Spacer(modifier = Modifier.weight(0.2f))
 
         // Radar animation
         RadarAnimation(
-            modifier = Modifier.size(160.dp)
+            modifier = Modifier.size(160.dp),
+            isScanning = isScanning
         )
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        Text(
-            "Private Discovery",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            textAlign = TextAlign.Center
-        )
-        Text(
-            "Coming Soon",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Emerald,
-            textAlign = TextAlign.Center
-        )
+        when (val s = state) {
+            is DiscoveryState.Idle, is DiscoveryState.Scanning -> {
+                Text(
+                    if (isScanning) "Scanning P2P Network..." else "Private Discovery",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "Find contacts via PSI",
+                    fontSize = 18.sp,
+                    color = Emerald,
+                    textAlign = TextAlign.Center
+                )
 
-        Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            "Find contacts without uploading your\naddress book, using Private Set\nIntersection (PSI).",
-            fontSize = 15.sp,
-            color = TextGray,
-            textAlign = TextAlign.Center,
-            lineHeight = 22.sp
-        )
+                Text(
+                    "Find contacts without uploading your\naddress book, using Zero-Knowledge\nPrivate Set Intersection.",
+                    fontSize = 15.sp,
+                    color = TextGray,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 22.sp
+                )
 
-        Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(48.dp))
 
-        // Info chips
-        Card(
-            colors = CardDefaults.cardColors(containerColor = SurfaceCard),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(modifier = Modifier.padding(20.dp)) {
-                InfoChip("🔐", "Zero-Knowledge Protocol")
-                Spacer(modifier = Modifier.height(14.dp))
-                InfoChip("📱", "Local-Only Computation")
-                Spacer(modifier = Modifier.height(14.dp))
-                InfoChip("👁", "No Server Sees Your Contacts")
+                Button(
+                    onClick = { viewModel.runPsiScan() },
+                    enabled = !isScanning,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isScanning) Emerald.copy(alpha = 0.2f) else Emerald,
+                        contentColor = Obsidian
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth().height(56.dp)
+                ) {
+                    if (isScanning) {
+                        CircularProgressIndicator(color = Obsidian, modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                    } else {
+                        Text("START PSI SCAN", fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+            is DiscoveryState.Success -> {
+                Surface(
+                    color = SurfaceCard,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        Text("SCAN COMPLETE", color = Emerald, fontWeight = FontWeight.Bold, fontSize = 12.sp, letterSpacing = 2.sp)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(s.message, color = Color.White, fontSize = 16.sp, lineHeight = 24.sp)
+                        
+                        if (s.matches > 0) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text("✓ Found ${s.matches} potential contacts", color = Emerald, fontSize = 14.sp)
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Button(
+                            onClick = { viewModel.reset() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Emerald),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("SEARCH AGAIN", color = Emerald)
+                        }
+                    }
+                }
+            }
+            is DiscoveryState.Error -> {
+                Text("Discovery Error", color = Color.Red, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(s.message, color = TextGray, textAlign = TextAlign.Center)
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(onClick = { viewModel.reset() }) {
+                    Text("TRY AGAIN")
+                }
             }
         }
 
@@ -97,11 +146,13 @@ fun DiscoveryScreen() {
 }
 
 @Composable
-private fun RadarAnimation(modifier: Modifier = Modifier) {
+private fun RadarAnimation(modifier: Modifier = Modifier, isScanning: Boolean) {
     val infiniteTransition = rememberInfiniteTransition(label = "radar")
     val sweepAngle by infiniteTransition.animateFloat(
         initialValue = 0f, targetValue = 360f,
-        animationSpec = infiniteRepeatable(tween(3000, easing = LinearEasing)),
+        animationSpec = infiniteRepeatable(
+            animation = tween(if (isScanning) 1000 else 3000, easing = LinearEasing)
+        ),
         label = "sweep"
     )
     val ringAlpha by infiniteTransition.animateFloat(

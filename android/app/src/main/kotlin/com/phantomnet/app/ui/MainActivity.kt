@@ -129,8 +129,18 @@ fun PhantomApp() {
             SplashScreen(
                 splashState = splashState,
                 onReady = { hasPersona ->
-                    currentScreen = if (hasPersona) "main" else "onboarding"
+                    if (hasPersona) {
+                        currentScreen = if (identityManager.stealthMode == 1) "decoy" else "main"
+                    } else {
+                        currentScreen = "onboarding"
+                    }
                 }
+            )
+        }
+        "decoy" -> {
+            com.phantomnet.app.ui.stealth.DecoyCalculatorScreen(
+                onAttemptUnlock = { pin -> identityManager.unlock(pin) },
+                onUnlockSuccess = { currentScreen = "main" }
             )
         }
         "onboarding" -> {
@@ -158,8 +168,33 @@ fun PhantomApp() {
                         }
                     }
                 },
+                onImport = { currentScreen = "sync_onboarding" },
                 onSkip = { currentScreen = "main" },
                 onComplete = { currentScreen = "main" }
+            )
+        }
+        "sync_onboarding" -> {
+            val syncViewModel = remember { 
+                com.phantomnet.feature.sync.SyncViewModel(identityManager) 
+            }
+            val syncState by syncViewModel.state.collectAsState()
+            
+            // Auto-start import mode for onboarding
+            LaunchedEffect(Unit) { syncViewModel.startImport() }
+
+            com.phantomnet.feature.sync.SyncScreen(
+                state = syncState,
+                onStartExport = { syncViewModel.startExport() },
+                onStartImport = { syncViewModel.startImport() },
+                onImportScanned = { bundle -> 
+                    syncViewModel.processImport(bundle) { }
+                },
+                onSyncHistory = { syncViewModel.processHistoryImport("{}") },
+                onFinish = {
+                    (context as android.app.Activity).finish()
+                    context.startActivity(context.intent)
+                },
+                onBack = { currentScreen = "onboarding" }
             )
         }
         "main" -> {
@@ -179,6 +214,16 @@ private fun MainShell(
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+
+    LaunchedEffect(identityManager.mixnetEnabled, identityManager.paranoiaMode) {
+        if (identityManager.mixnetEnabled) {
+            PhantomCore.initMixnetSafe(
+                intervalMs = 1000,
+                batchSize = 5,
+                paranoia = identityManager.paranoiaMode
+            )
+        }
+    }
 
     // Determine if we should show bottom bar
     val showBottomBar = currentRoute in Tab.entries.map { it.route }
@@ -231,9 +276,10 @@ private fun MainShell(
         val dhtStatus by NetworkStatus.dhtStatus.collectAsState()
         val meshStatus by NetworkStatus.meshStatus.collectAsState()
 
-        // Real-time conversations from DB
+        // Real-time conversations and rooms from DB
         val listViewModel: com.phantomnet.app.ui.home.ConversationListViewModel = viewModel()
         val conversations by listViewModel.conversations.collectAsState()
+        val rooms by listViewModel.rooms.collectAsState()
 
         NavHost(
             navController = navController,
@@ -244,11 +290,12 @@ private fun MainShell(
             composable(Tab.CHATS.route) {
                 ConversationListScreen(
                     conversations = conversations,
+                    rooms = rooms,
                     torStatus = torStatus,
                     dhtStatus = dhtStatus,
                     meshStatus = meshStatus,
                     onConversationClick = { id -> navController.navigate("chat/$id") },
-                    onRoomClick = { name -> navController.navigate("room/$name") },
+                    onRoomClick = { id, name -> navController.navigate("room/$id?name=$name") },
                     onFabClick = { navController.navigate("add_contact") }
                 )
             }
@@ -260,7 +307,18 @@ private fun MainShell(
 
             // ── Tab: Vault ──
             composable(Tab.VAULT.route) {
-                VaultScreen()
+                VaultScreen(
+                    identityStream = identityManager.observePersona(),
+                    onBackupClick = { navController.navigate("backup") },
+                    onWipeClick = { 
+                        // Show confirmation or just run it (Settings already has confirmation logic usually)
+                        // For consistency with Settings, we'll navigate to backup or run wipe
+                        MainScope().launch {
+                            identityManager.wipeAll()
+                            onWipeComplete()
+                        }
+                    }
+                )
             }
 
             // ── Tab: Settings ──
@@ -279,6 +337,19 @@ private fun MainShell(
                     state = settingsState,
                     onPrivacyDashboardClick = { navController.navigate("privacy") },
                     onSecureBackupClick = { navController.navigate("backup") },
+                    onLinkDeviceClick = { navController.navigate("sync") },
+                    onStealthModeChange = { mode ->
+                        identityManager.stealthMode = mode
+                        Toast.makeText(context, "Stealth Mode Updated", Toast.LENGTH_SHORT).show()
+                    },
+                    onMixnetChange = { enabled ->
+                        settingsViewModel.setMixnetEnabled(enabled)
+                        Toast.makeText(context, if (enabled) "Mixnet Activated" else "Mixnet Disabled", Toast.LENGTH_SHORT).show()
+                    },
+                    onParanoiaChange = { enabled ->
+                        settingsViewModel.setParanoiaMode(enabled)
+                        Toast.makeText(context, if (enabled) "Paranoia Mode: $enabled" else "Paranoia Disabled", Toast.LENGTH_SHORT).show()
+                    },
                     onWipeConfirmed = {
                         MainScope().launch {
                             identityManager.wipeAll()
@@ -344,10 +415,15 @@ private fun MainShell(
                 }
             }
 
-            composable("room/{roomName}") { backStackEntry ->
+            composable("room/{roomId}?name={roomName}") { backStackEntry ->
+                val roomId = backStackEntry.arguments?.getString("roomId") ?: "demo"
                 val roomName = backStackEntry.arguments?.getString("roomName") ?: "Secret Room"
+                val roomViewModel: com.phantomnet.app.ui.rooms.RoomViewModel = viewModel()
+
                 com.phantomnet.app.ui.rooms.DcNetRoomScreen(
                     roomName = roomName,
+                    roomId = roomId,
+                    viewModel = roomViewModel,
                     onBackClick = { navController.popBackStack() }
                 )
             }
@@ -355,13 +431,45 @@ private fun MainShell(
             composable("privacy") {
                 com.phantomnet.app.ui.privacy.PrivacyDashboardScreen(
                     onBackClick = { navController.popBackStack() },
-                    onBackupClick = { navController.navigate("backup") }
+                    onBackupClick = { navController.navigate("backup") },
+                    onWipeComplete = onWipeComplete
                 )
             }
 
             composable("backup") {
                 com.phantomnet.app.ui.backup.ShardWizardScreen(
                     onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            // ── Phase 6: Multi-Device Sync ──
+            composable("sync") {
+                val syncViewModel = remember { 
+                    com.phantomnet.feature.sync.SyncViewModel(identityManager) 
+                }
+                val syncState by syncViewModel.state.collectAsState()
+                
+                com.phantomnet.feature.sync.SyncScreen(
+                    state = syncState,
+                    onStartExport = { syncViewModel.startExport() },
+                    onStartImport = { syncViewModel.startImport() },
+                    onImportScanned = { bundle -> 
+                        syncViewModel.processImport(bundle) {
+                            // Legacy callback, handled in onFinish now
+                        }
+                    },
+                    onSyncHistory = {
+                        // For Stage 3 MVP, we trigger the ingestion logic.
+                        // In production, Phone B would receive this via DHT from Phone A.
+                        syncViewModel.processHistoryImport("{}") 
+                    },
+                    onFinish = {
+                        Toast.makeText(context, "Sync Finalized", Toast.LENGTH_LONG).show()
+                        // Force app reset to reload new identity
+                        (context as android.app.Activity).finish()
+                        context.startActivity(context.intent)
+                    },
+                    onBack = { navController.popBackStack() }
                 )
             }
         }

@@ -14,16 +14,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.phantomnet.core.PhantomCore
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.phantomnet.app.ui.theme.HackerGreen
+import com.phantomnet.app.ui.theme.DarkBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DcNetRoomScreen(
     roomName: String,
+    roomId: String = "demo_room",
+    viewModel: RoomViewModel = viewModel(),
     onBackClick: () -> Unit
 ) {
     var messageText by remember { mutableStateOf("") }
-    var resultLog by remember { mutableStateOf(listOf("Room initialized. All participants connected.")) }
+    val messages by viewModel.messages.collectAsState()
+
+    LaunchedEffect(roomId) {
+        viewModel.initRoom(roomId)
+    }
 
     Scaffold(
         topBar = {
@@ -31,15 +39,15 @@ fun DcNetRoomScreen(
                 title = { 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(roomName, color = Color.White, style = MaterialTheme.typography.titleMedium)
-                        Text("Untraceable DC-Net Mode", color = Color(0xFF00E676), style = MaterialTheme.typography.labelSmall)
+                        Text("Untraceable DC-Net Mode", color = HackerGreen, style = MaterialTheme.typography.labelSmall)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFF0B0E11)
+                    containerColor = DarkBackground
                 )
             )
         },
-        containerColor = Color(0xFF0B0E11)
+        containerColor = DarkBackground
     ) { padding ->
         Column(
             modifier = Modifier
@@ -47,37 +55,47 @@ fun DcNetRoomScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Room Members visualization
+            // Room Members (Mock participants)
             Row(
                 modifier = Modifier.fillMaxWidth().padding(8.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                repeat(5) {
+                repeat(3) {
                     Box(
                         modifier = Modifier
                             .size(12.dp)
                             .padding(2.dp)
-                            .background(Color(0xFF00E676), CircleShape)
+                            .background(HackerGreen, CircleShape)
                     )
                 }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Log / Message Display
+            // Message Display
             Surface(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 color = Color(0xFF1C1F26)
             ) {
-                Column(modifier = Modifier.padding(12.dp)) {
-                    resultLog.forEach { log ->
-                        Text(
-                            text = log,
-                            color = if (log.startsWith("Contribution")) Color(0xFF00E676) else Color.LightGray,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
+                androidx.compose.foundation.lazy.LazyColumn(
+                    modifier = Modifier.padding(12.dp),
+                    reverseLayout = true
+                ) {
+                    items(messages.size) { index ->
+                        val msg = messages[index]
+                        Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                            Text(
+                                text = if (msg.isMe) "My Contribution" else "Peer Broadcast",
+                                color = HackerGreen,
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                            Text(
+                                text = msg.content,
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
                 }
             }
@@ -98,7 +116,7 @@ fun DcNetRoomScreen(
                         containerColor = Color(0xFF1C1F26),
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
-                        cursorColor = Color(0xFF00E676)
+                        cursorColor = HackerGreen
                     ),
                     shape = RoundedCornerShape(24.dp)
                 )
@@ -108,14 +126,11 @@ fun DcNetRoomScreen(
                 IconButton(
                     onClick = {
                         if (messageText.isNotBlank()) {
-                            val contributionPreview =
-                                PhantomCore.computeDcNetContributionSafe(1, messageText).take(20)
-                            resultLog = resultLog + "Contribution generated: $contributionPreview..."
-                            resultLog = resultLog + "Broadcasting XOR-sum to room..."
+                            viewModel.sendMessage(roomId, messageText)
                             messageText = ""
                         }
                     },
-                    modifier = Modifier.background(Color(0xFF00E676), CircleShape)
+                    modifier = Modifier.background(HackerGreen, CircleShape)
                 ) {
                     Icon(Icons.Default.Send, contentDescription = "Send", tint = Color.Black)
                 }

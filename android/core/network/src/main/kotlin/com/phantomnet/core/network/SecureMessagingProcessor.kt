@@ -18,45 +18,118 @@ object SecureMessagingProcessor {
         val identityManager = IdentityManager.getInstance(context)
         val db = identityManager.getDatabase() ?: return
 
-        // 1. Try to decrypt
-        val decrypted = try {
-            SignalBridge.decryptMessageSafe(payload)
-        } catch (e: Exception) {
-            Log.e(TAG, "Decryption failed for incoming payload")
-            return
-        }
+        try {
+            val jsonObj = org.json.JSONObject(payload)
+            val type = jsonObj.optString("type")
 
-        // 2. Check for Handshake
-        if (decrypted.startsWith("PHANTOM_HANDSHAKE:")) {
-            handleHandshake(db, decrypted)
-        } else {
-            // 3. Handle data message
-            // In a real app, we'd look up the conversation by the sender's fingerprint.
-            // For MVP Phase 2, we find the most recent conversation and append.
-            val latestConv = com.phantomnet.core.database.PhantomDatabaseFactory.getInstance(context, "placeholder".toByteArray())
-                .conversationDao().getAll().let { /* flow collecting is complex here, simplified for demo */ }
-                
-            // simplified: append to any conversation for now or log
-            Log.i(TAG, "Message received: $decrypted")
+            if (type == "HANDSHAKE_INIT_HYBRID") {
+                handleHybridHandshake(context, db, jsonObj)
+            } else if (type == "HANDSHAKE_INIT") {
+                handleX3dhHandshake(context, db, jsonObj)
+            } else {
+                // Handle standard encrypted message
+                handleEncryptedMessage(context, db, jsonObj)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to process incoming payload: ${e.message}")
         }
     }
 
-    private suspend fun handleHandshake(db: com.phantomnet.core.database.PhantomDatabase, handshake: String) {
-        val params = handshake.removePrefix("PHANTOM_HANDSHAKE:").split(",")
-        val senderFp = params.find { it.startsWith("my_fp=") }?.removePrefix("my_fp=") ?: "Unknown"
+    private suspend fun handleHybridHandshake(
+        context: Context,
+        db: com.phantomnet.core.database.PhantomDatabase,
+        handshake: org.json.JSONObject
+    ) {
+        val senderFp = handshake.getString("fp")
+        val senderIk = handshake.getString("ik")
+        val senderEk = handshake.getString("ek")
+        val kyberCt = handshake.getString("kct")
+        val encryptedMsg = handshake.getString("msg")
 
+        // 1. Get our Secrets
+        val persona = db.personaDao().getActivePersona().firstOrNull() ?: return
+        val secretBundleObj = org.json.JSONObject(persona.secretBundleJson ?: return)
+        
+        val mySpkSecretX25519 = secretBundleObj.getString("signed_prekey_secret")
+        val mySpkSecretKyber = secretBundleObj.getString("signed_prekey_kyber_secret")
+
+        // 2. Derive Hybrid Shared Secret
+        // 2a. X25519 DH (SPK_B_secret * IK_A_public)
+        val ssX25519 = SignalBridge.deriveSharedSecretSafe(mySpkSecretX25519, senderIk)
+        
+        // 2b. Kyber Decapsulation
+        val ssKyber = SignalBridge.decapsulateKyberSafe(mySpkSecretKyber, kyberCt)
+        
+        // 2c. Combine
+        val sharedSecretBase64 = SignalBridge.deriveHybridSecretSafe(ssX25519, ssKyber)
+        val sharedSecretBytes = android.util.Base64.decode(sharedSecretBase64, android.util.Base64.DEFAULT)
+
+        // 3. Decrypt initial message
+        val plaintext = SignalBridge.decryptWithKeySafe(encryptedMsg, sharedSecretBase64)
+
+        // 4. Create Conversation
         val conversation = ConversationEntity(
             id = UUID.randomUUID().toString(),
-            contactName = "New Peer ($senderFp)",
+            contactName = "Peer ($senderFp)",
             contactFingerprint = senderFp,
-            contactPublicKey = "handshake_exchange".toByteArray(),
-            lastMessagePreview = "Handshake received. Secure session established.",
+            contactPublicKey = android.util.Base64.decode(senderIk, android.util.Base64.DEFAULT),
+            lastMessagePreview = plaintext,
             lastMessageTimestamp = System.currentTimeMillis(),
             unreadCount = 1,
             isOnline = true,
-            routingMode = "DHT"
+            routingMode = "DHT",
+            sharedSecret = sharedSecretBytes
         )
         db.conversationDao().upsert(conversation)
-        Log.i(TAG, "New conversation created from handshake: $senderFp")
+
+        // 5. Store Message
+        val message = MessageEntity(
+            id = UUID.randomUUID().toString(),
+            conversationId = conversation.id,
+            senderId = senderFp,
+            contentPlaintext = plaintext,
+            contentCiphertext = android.util.Base64.decode(encryptedMsg, android.util.Base64.DEFAULT),
+            timestamp = System.currentTimeMillis(),
+            isMe = false,
+            status = "DELIVERED",
+            expiresAt = null
+        )
+        db.messageDao().insert(message)
+
+        Log.i(TAG, "HYBRID Secure session established with $senderFp (X25519 + Kyber-768)")
+    }
+
+    private suspend fun handleEncryptedMessage(
+        context: Context,
+        db: com.phantomnet.core.database.PhantomDatabase,
+        json: org.json.JSONObject
+    ) {
+        val senderFp = json.getString("fp")
+        val ciphertext = json.getString("msg")
+
+        // Find conversation with this peer
+        val conv = db.conversationDao().getByFingerprint(senderFp) ?: return
+        val sharedSecret = conv.sharedSecret ?: return
+        val sharedSecretBase64 = android.util.Base64.encodeToString(sharedSecret, android.util.Base64.DEFAULT)
+
+        // Decrypt
+        val plaintext = SignalBridge.decryptWithKeySafe(ciphertext, sharedSecretBase64)
+
+        // Store and update conv
+        val message = MessageEntity(
+            id = UUID.randomUUID().toString(),
+            conversationId = conv.id,
+            senderId = senderFp,
+            contentPlaintext = plaintext,
+            contentCiphertext = android.util.Base64.decode(ciphertext, android.util.Base64.DEFAULT),
+            timestamp = System.currentTimeMillis(),
+            isMe = false,
+            status = "DELIVERED",
+            expiresAt = null
+        )
+        db.messageDao().insert(message)
+        
+        db.conversationDao().updateLastMessage(conv.id, plaintext, System.currentTimeMillis())
+        Log.i(TAG, "Decrypted message from $senderFp")
     }
 }

@@ -20,24 +20,75 @@ class SignalBridge {
         }
 
         @JvmStatic
-        fun encryptMessageSafe(message: String, recipientPublicKey: String): String {
+        fun generatePrekeyBundleSafe(): String {
             if (!nativeLoaded) throw IllegalStateException("Signal native lib not available")
-            return encryptMessage(message, recipientPublicKey)
+            return generatePrekeyBundle()
         }
 
         @JvmStatic
-        fun decryptMessageSafe(encryptedMessage: String): String {
+        fun generateEphemeralKeyPairSafe(): String {
             if (!nativeLoaded) throw IllegalStateException("Signal native lib not available")
-            return decryptMessage(encryptedMessage)
+            return generateEphemeralKeyPair()
         }
 
         @JvmStatic
-        private external fun generateIdentity(): String
+        fun encapsulateKyberSafe(theirPublicKyber: String): String {
+            if (!nativeLoaded) throw IllegalStateException("Signal native lib not available")
+            return encapsulateKyber(theirPublicKyber)
+        }
 
         @JvmStatic
-        private external fun encryptMessage(message: String, recipientPublicKey: String): String
+        fun decapsulateKyberSafe(mySecretKyber: String, theirCiphertext: String): String {
+            if (!nativeLoaded) throw IllegalStateException("Signal native lib not available")
+            return decapsulateKyber(mySecretKyber, theirCiphertext)
+        }
 
         @JvmStatic
-        private external fun decryptMessage(encryptedMessage: String): String
+        fun deriveHybridSecretSafe(ssX25519: String, ssKyber: String): String {
+            if (!nativeLoaded) throw IllegalStateException("Signal native lib not available")
+            return deriveHybridSecret(ssX25519, ssKyber)
+        }
+
+        @JvmStatic
+        fun deriveSharedSecretSafe(mySecret: String, theirPublic: String): String {
+            if (!nativeLoaded) throw IllegalStateException("Signal native lib not available")
+            return deriveSharedSecret(mySecret, theirPublic)
+        }
+
+        @JvmStatic
+        fun encryptWithKeySafe(message: String, keyBase64: String): String {
+            if (!nativeLoaded) throw IllegalStateException("Signal native lib not available")
+            return encryptWithKey(message, keyBase64)
+        }
+
+        @JvmStatic
+        fun decryptWithKeySafe(encryptedBase64: String, keyBase64: String): String {
+            if (!nativeLoaded) throw IllegalStateException("Signal native lib not available")
+            return decryptWithKey(encryptedBase64, keyBase64)
+        }
+
+        @JvmStatic
+        private external fun generatePrekeyBundle(): String
+
+        @JvmStatic
+        private external fun generateEphemeralKeyPair(): String
+
+        @JvmStatic
+        private external fun encapsulateKyber(theirPublicKyber: String): String
+
+        @JvmStatic
+        private external fun decapsulateKyber(mySecretKyber: String, theirCiphertext: String): String
+
+        @JvmStatic
+        private external fun deriveHybridSecret(ssX25519: String, ssKyber: String): String
+
+        @JvmStatic
+        private external fun deriveSharedSecret(mySecret: String, theirPublic: String): String
+
+        @JvmStatic
+        private external fun encryptWithKey(message: String, keyBase64: String): String
+
+        @JvmStatic
+        private external fun decryptWithKey(encryptedBase64: String, keyBase64: String): String
     }
 }
