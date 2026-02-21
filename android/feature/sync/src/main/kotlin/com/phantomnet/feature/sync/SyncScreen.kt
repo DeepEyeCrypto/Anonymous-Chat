@@ -1,5 +1,11 @@
 package com.phantomnet.feature.sync
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,6 +18,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,10 +30,9 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
+
 
 private val Emerald = Color(0xFF00E676)
 private val Obsidian = Color(0xFF0B0E11)
@@ -41,8 +48,47 @@ fun SyncScreen(
     onImportScanned: (String) -> Unit,
     onSyncHistory: () -> Unit,
     onFinish: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onPermissionResult: (Boolean) -> Unit,
+    onPermissionPermanentlyDenied: () -> Unit
 ) {
+    val context = LocalContext.current
+    
+    // Permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        onPermissionResult(isGranted)
+    }
+    
+    // Check permission on first composition
+    LaunchedEffect(Unit) {
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        
+        if (hasPermission) {
+            onPermissionResult(true)
+        } else if (state.isPermissionRequested) {
+            // User was asked but denied - check if we should show rationale
+            val shouldShowRationale = context.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)
+            if (!shouldShowRationale) {
+                // Permission was denied permanently
+                onPermissionPermanentlyDenied()
+            }
+        }
+    }
+    
+    // Show error snackbar if there's an error
+    val snackbarHostState = remember { SnackbarHostState() }
+    
+    LaunchedEffect(state.error) {
+        state.error?.let { error ->
+            snackbarHostState.showSnackbar(error)
+        }
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -65,6 +111,7 @@ fun SyncScreen(
                 )
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = Obsidian
     ) { padding ->
         Column(
@@ -78,7 +125,25 @@ fun SyncScreen(
                 SyncSuccessView(state, onSyncHistory, onFinish)
             } else {
                 when (state.mode) {
-                    SyncMode.Idle -> SyncIdleHome(onStartExport, onStartImport)
+                    SyncMode.Idle -> SyncIdleHome(
+                        onStartExport = onStartExport,
+                        onStartImport = { 
+                            // Request permission when clicking import
+                            val hasPermission = ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.CAMERA
+                            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                            
+                            if (hasPermission) {
+                                // Permission already granted, proceed with import
+                                onStartImport()
+                            } else {
+                                // Request permission - will trigger onPermissionResult callback
+                                permissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
+                        }
+                    )
+
                     SyncMode.Exporting -> SyncExportView(state)
                     SyncMode.Importing -> SyncImportView(onImportScanned)
                 }
@@ -86,6 +151,7 @@ fun SyncScreen(
         }
     }
 }
+
 
 @Composable
 private fun SyncIdleHome(onStartExport: () -> Unit, onStartImport: () -> Unit) {

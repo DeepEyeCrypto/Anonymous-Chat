@@ -8,7 +8,9 @@ data class SyncUiState(
     val error: String? = null,
     val isComplete: Boolean = false,
     val isHistoryComplete: Boolean = false,
-    val mode: SyncMode = SyncMode.Idle
+    val mode: SyncMode = SyncMode.Idle,
+    val hasCameraPermission: Boolean = false,
+    val isPermissionRequested: Boolean = false
 )
 
 enum class SyncMode {

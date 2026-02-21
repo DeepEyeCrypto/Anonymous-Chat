@@ -181,13 +181,15 @@ fun PhantomApp() {
             }
             val syncState by syncViewModel.state.collectAsState()
             
-            // Auto-start import mode for onboarding
-            LaunchedEffect(Unit) { syncViewModel.startImport() }
+            // Auto-start import mode for onboarding (permission is already granted from MainActivity)
+            LaunchedEffect(Unit) { 
+                syncViewModel.onPermissionResult(true) 
+            }
 
             com.phantomnet.feature.sync.SyncScreen(
                 state = syncState,
                 onStartExport = { syncViewModel.startExport() },
-                onStartImport = { syncViewModel.startImport() },
+                onStartImport = { syncViewModel.onImportClicked() },
                 onImportScanned = { bundle -> 
                     syncViewModel.processImport(bundle) { }
                 },
@@ -196,9 +198,12 @@ fun PhantomApp() {
                     (context as android.app.Activity).finish()
                     context.startActivity(context.intent)
                 },
-                onBack = { currentScreen = "onboarding" }
+                onBack = { currentScreen = "onboarding" },
+                onPermissionResult = { granted -> syncViewModel.onPermissionResult(granted) },
+                onPermissionPermanentlyDenied = { syncViewModel.onPermissionPermanentlyDenied() }
             )
         }
+
         "main" -> {
             MainShell(
                 identityManager = identityManager,
@@ -454,7 +459,7 @@ private fun MainShell(
                 com.phantomnet.feature.sync.SyncScreen(
                     state = syncState,
                     onStartExport = { syncViewModel.startExport() },
-                    onStartImport = { syncViewModel.startImport() },
+                    onStartImport = { syncViewModel.onImportClicked() },
                     onImportScanned = { bundle -> 
                         syncViewModel.processImport(bundle) {
                             // Legacy callback, handled in onFinish now
@@ -471,9 +476,12 @@ private fun MainShell(
                         (context as android.app.Activity).finish()
                         context.startActivity(context.intent)
                     },
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    onPermissionResult = { granted -> syncViewModel.onPermissionResult(granted) },
+                    onPermissionPermanentlyDenied = { syncViewModel.onPermissionPermanentlyDenied() }
                 )
             }
+
         }
     }
 }
