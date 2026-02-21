@@ -1,0 +1,214 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:crypto:preBuild UP-TO-DATE
+> Task :core:crypto:preDebugBuild UP-TO-DATE
+> Task :core:database:preBuild UP-TO-DATE
+> Task :core:database:preDebugBuild UP-TO-DATE
+> Task :core:identity:preBuild UP-TO-DATE
+> Task :core:identity:preDebugBuild UP-TO-DATE
+> Task :core:network:preBuild UP-TO-DATE
+> Task :core:network:preDebugBuild UP-TO-DATE
+> Task :core:network:writeDebugAarMetadata
+> Task :feature:onboarding:preBuild UP-TO-DATE
+> Task :feature:onboarding:preDebugBuild UP-TO-DATE
+> Task :core:database:writeDebugAarMetadata
+> Task :core:identity:writeDebugAarMetadata
+> Task :core:crypto:writeDebugAarMetadata
+> Task :feature:settings:preBuild UP-TO-DATE
+> Task :feature:settings:preDebugBuild UP-TO-DATE
+> Task :feature:sync:preBuild UP-TO-DATE
+> Task :feature:sync:preDebugBuild UP-TO-DATE
+> Task :feature:settings:writeDebugAarMetadata
+> Task :feature:sync:writeDebugAarMetadata
+> Task :app:generateDebugResValues
+> Task :feature:onboarding:writeDebugAarMetadata
+> Task :core:crypto:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :core:crypto:generateDebugResources
+> Task :core:crypto:packageDebugResources
+> Task :core:database:generateDebugResValues
+> Task :core:database:generateDebugResources
+> Task :core:database:packageDebugResources
+> Task :core:identity:generateDebugResValues
+> Task :core:identity:generateDebugResources
+> Task :core:identity:packageDebugResources
+> Task :core:network:generateDebugResValues
+> Task :core:network:generateDebugResources
+> Task :core:network:packageDebugResources
+> Task :feature:onboarding:generateDebugResValues
+> Task :feature:onboarding:generateDebugResources
+> Task :feature:onboarding:packageDebugResources
+> Task :feature:settings:generateDebugResValues
+> Task :feature:settings:generateDebugResources
+> Task :feature:settings:packageDebugResources
+> Task :feature:sync:generateDebugResValues
+> Task :feature:sync:generateDebugResources
+> Task :feature:sync:packageDebugResources
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:mergeDebugResources
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :core:crypto:extractDeepLinksDebug
+> Task :core:database:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :core:identity:extractDeepLinksDebug
+> Task :core:identity:processDebugManifest
+> Task :core:crypto:processDebugManifest
+> Task :core:database:processDebugManifest
+> Task :core:network:extractDeepLinksDebug
+> Task :feature:onboarding:extractDeepLinksDebug
+> Task :feature:onboarding:processDebugManifest
+> Task :core:network:processDebugManifest
+> Task :feature:settings:extractDeepLinksDebug
+> Task :feature:sync:extractDeepLinksDebug
+> Task :feature:settings:processDebugManifest
+> Task :feature:sync:processDebugManifest
+> Task :core:crypto:compileDebugLibraryResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :core:database:compileDebugLibraryResources
+> Task :app:processDebugManifestForPackage
+> Task :core:identity:compileDebugLibraryResources
+> Task :core:database:parseDebugLocalResources
+> Task :core:crypto:parseDebugLocalResources
+> Task :core:identity:parseDebugLocalResources
+> Task :core:network:compileDebugLibraryResources
+> Task :core:network:parseDebugLocalResources
+> Task :core:database:generateDebugRFile
+> Task :core:identity:generateDebugRFile
+> Task :core:crypto:generateDebugRFile
+> Task :core:network:generateDebugRFile
+> Task :feature:onboarding:compileDebugLibraryResources
+> Task :feature:settings:compileDebugLibraryResources
+> Task :feature:onboarding:parseDebugLocalResources
+> Task :feature:settings:parseDebugLocalResources
+> Task :feature:onboarding:generateDebugRFile
+> Task :feature:sync:compileDebugLibraryResources
+> Task :core:crypto:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:sync:parseDebugLocalResources
+> Task :feature:settings:generateDebugRFile
+> Task :feature:sync:generateDebugRFile
+> Task :core:crypto:compileDebugKotlin
+> Task :core:database:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:crypto:javaPreCompileDebug
+> Task :app:processDebugResources
+> Task :core:database:javaPreCompileDebug
+> Task :core:identity:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:identity:javaPreCompileDebug
+> Task :core:network:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:network:javaPreCompileDebug
+> Task :feature:onboarding:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:onboarding:javaPreCompileDebug
+> Task :feature:settings:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:settings:javaPreCompileDebug
+> Task :feature:sync:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:sync:javaPreCompileDebug
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :core:crypto:mergeDebugShaders
+> Task :core:crypto:compileDebugShaders NO-SOURCE
+> Task :core:crypto:generateDebugAssets UP-TO-DATE
+> Task :core:crypto:packageDebugAssets
+> Task :core:database:mergeDebugShaders
+> Task :core:database:compileDebugShaders NO-SOURCE
+> Task :core:database:generateDebugAssets UP-TO-DATE
+> Task :core:database:packageDebugAssets
+> Task :core:identity:mergeDebugShaders
+> Task :core:identity:compileDebugShaders NO-SOURCE
+> Task :core:identity:generateDebugAssets UP-TO-DATE
+> Task :core:identity:packageDebugAssets
+> Task :core:network:mergeDebugShaders
+> Task :core:network:compileDebugShaders NO-SOURCE
+> Task :core:network:generateDebugAssets UP-TO-DATE
+> Task :core:network:packageDebugAssets
+> Task :feature:onboarding:mergeDebugShaders
+> Task :feature:onboarding:compileDebugShaders NO-SOURCE
+> Task :feature:onboarding:generateDebugAssets UP-TO-DATE
+> Task :feature:onboarding:packageDebugAssets
+> Task :feature:settings:mergeDebugShaders
+> Task :feature:settings:compileDebugShaders NO-SOURCE
+> Task :feature:settings:generateDebugAssets UP-TO-DATE
+> Task :feature:settings:packageDebugAssets
+> Task :feature:sync:mergeDebugShaders
+> Task :feature:sync:compileDebugShaders NO-SOURCE
+> Task :feature:sync:generateDebugAssets UP-TO-DATE
+> Task :feature:sync:packageDebugAssets
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :core:database:kaptGenerateStubsDebugKotlin
+> Task :app:checkDebugDuplicateClasses
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeDebugJniLibFolders
+> Task :core:crypto:mergeDebugJniLibFolders
+> Task :core:crypto:mergeDebugNativeLibs NO-SOURCE
+> Task :core:crypto:copyDebugJniLibsProjectOnly
+> Task :core:database:mergeDebugJniLibFolders
+> Task :core:database:mergeDebugNativeLibs NO-SOURCE
+> Task :core:database:copyDebugJniLibsProjectOnly
+> Task :core:identity:mergeDebugJniLibFolders
+> Task :core:identity:mergeDebugNativeLibs NO-SOURCE
+> Task :core:identity:copyDebugJniLibsProjectOnly
+> Task :core:network:mergeDebugJniLibFolders
+> Task :core:network:mergeDebugNativeLibs NO-SOURCE
+> Task :core:network:copyDebugJniLibsProjectOnly
+> Task :feature:onboarding:mergeDebugJniLibFolders
+> Task :feature:onboarding:mergeDebugNativeLibs NO-SOURCE
+> Task :app:mergeExtDexDebug
+
+> Task :core:database:kaptGenerateStubsDebugKotlin
+w: Support for language version 2.0+ in kapt is in Alpha and must be enabled explicitly. Falling back to 1.9.
+
+> Task :core:crypto:compileDebugJavaWithJavac NO-SOURCE
+> Task :core:crypto:bundleLibCompileToJarDebug
+> Task :core:database:kaptDebugKotlin
+> Task :core:crypto:processDebugJavaRes
+> Task :feature:onboarding:copyDebugJniLibsProjectOnly
+> Task :core:crypto:bundleLibRuntimeToDirDebug
+> Task :feature:settings:mergeDebugJniLibFolders
+> Task :feature:settings:mergeDebugNativeLibs NO-SOURCE
+> Task :feature:settings:copyDebugJniLibsProjectOnly
+> Task :feature:sync:mergeDebugJniLibFolders
+> Task :feature:sync:mergeDebugNativeLibs NO-SOURCE
+> Task :feature:sync:copyDebugJniLibsProjectOnly
+> Task :app:mergeDebugNativeLibs
+> Task :app:validateSigningDebug
+
+> Task :core:database:kaptDebugKotlin
+/Users/enayat/Documents/Anonymous Chat/android/core/database/build/tmp/kapt3/stubs/debug/com/phantomnet/core/database/PhantomDatabase.java:4: error: cannot find symbol
+@androidx.room.Database(entities = {PersonaEntity.class, ConversationEntity.class, MessageEntity.class, com.phantomnet.core.database.entity.RoomEntity.class, com.phantomnet.core.database.entity.CallLogEntity.class}, version = 1, exportSchema = false)
+                                    ^
+  symbol: class PersonaEntity
+/Users/enayat/Documents/Anonymous Chat/android/core/database/build/tmp/kapt3/stubs/debug/com/phantomnet/core/database/PhantomDatabase.java:4: error: cannot find symbol
+@androidx.room.Database(entities = {PersonaEntity.class, ConversationEntity.class, MessageEntity.class, com.phantomnet.core.database.entity.RoomEntity.class, com.phantomnet.core.database.entity.CallLogEntity.class}, version = 1, exportSchema = false)
+                                                         ^
+  symbol: class ConversationEntity
+/Users/enayat/Documents/Anonymous Chat/android/core/database/build/tmp/kapt3/stubs/debug/com/phantomnet/core/database/PhantomDatabase.java:4: error: cannot find symbol
+@androidx.room.Database(entities = {PersonaEntity.class, ConversationEntity.class, MessageEntity.class, com.phantomnet.core.database.entity.RoomEntity.class, com.phantomnet.core.database.entity.CallLogEntity.class}, version = 1, exportSchema = false)
+                                                                                   ^
+  symbol: class MessageEntity
+error: [MissingType]: Element 'com.phantomnet.core.database.PhantomDatabase' references a type that is not present
+
+> Task :core:database:kaptDebugKotlin FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':core:database:kaptDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.gradle.internal.KaptWithoutKotlincTask$KaptExecutionWorkAction
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 38m 17s
+127 actionable tasks: 127 executed

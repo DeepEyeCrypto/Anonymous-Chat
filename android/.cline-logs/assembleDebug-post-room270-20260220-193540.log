@@ -1,0 +1,211 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:crypto:preBuild UP-TO-DATE
+> Task :core:crypto:preDebugBuild UP-TO-DATE
+> Task :core:crypto:writeDebugAarMetadata UP-TO-DATE
+> Task :core:database:preBuild UP-TO-DATE
+> Task :core:database:preDebugBuild UP-TO-DATE
+> Task :core:database:writeDebugAarMetadata UP-TO-DATE
+> Task :core:identity:preBuild UP-TO-DATE
+> Task :core:identity:preDebugBuild UP-TO-DATE
+> Task :core:identity:writeDebugAarMetadata UP-TO-DATE
+> Task :core:network:preBuild UP-TO-DATE
+> Task :core:network:preDebugBuild UP-TO-DATE
+> Task :core:network:writeDebugAarMetadata UP-TO-DATE
+> Task :feature:onboarding:preBuild UP-TO-DATE
+> Task :feature:onboarding:preDebugBuild UP-TO-DATE
+> Task :feature:onboarding:writeDebugAarMetadata UP-TO-DATE
+> Task :feature:settings:preBuild UP-TO-DATE
+> Task :feature:settings:preDebugBuild UP-TO-DATE
+> Task :feature:settings:writeDebugAarMetadata UP-TO-DATE
+> Task :feature:sync:preBuild UP-TO-DATE
+> Task :feature:sync:preDebugBuild UP-TO-DATE
+> Task :feature:sync:writeDebugAarMetadata UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :core:crypto:generateDebugResValues UP-TO-DATE
+> Task :core:crypto:generateDebugResources UP-TO-DATE
+> Task :core:crypto:packageDebugResources UP-TO-DATE
+> Task :core:database:generateDebugResValues UP-TO-DATE
+> Task :core:database:generateDebugResources UP-TO-DATE
+> Task :core:database:packageDebugResources UP-TO-DATE
+> Task :core:identity:generateDebugResValues UP-TO-DATE
+> Task :core:identity:generateDebugResources UP-TO-DATE
+> Task :core:identity:packageDebugResources UP-TO-DATE
+> Task :core:network:generateDebugResValues UP-TO-DATE
+> Task :core:network:generateDebugResources UP-TO-DATE
+> Task :core:network:packageDebugResources UP-TO-DATE
+> Task :feature:onboarding:generateDebugResValues UP-TO-DATE
+> Task :feature:onboarding:generateDebugResources UP-TO-DATE
+> Task :feature:onboarding:packageDebugResources UP-TO-DATE
+> Task :feature:settings:generateDebugResValues UP-TO-DATE
+> Task :feature:settings:generateDebugResources UP-TO-DATE
+> Task :feature:settings:packageDebugResources UP-TO-DATE
+> Task :feature:sync:generateDebugResValues UP-TO-DATE
+> Task :feature:sync:generateDebugResources UP-TO-DATE
+> Task :feature:sync:packageDebugResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :core:crypto:extractDeepLinksDebug UP-TO-DATE
+> Task :core:crypto:processDebugManifest UP-TO-DATE
+> Task :core:database:extractDeepLinksDebug UP-TO-DATE
+> Task :core:database:processDebugManifest UP-TO-DATE
+> Task :core:identity:extractDeepLinksDebug UP-TO-DATE
+> Task :core:identity:processDebugManifest UP-TO-DATE
+> Task :core:network:extractDeepLinksDebug UP-TO-DATE
+> Task :core:network:processDebugManifest UP-TO-DATE
+> Task :feature:onboarding:extractDeepLinksDebug UP-TO-DATE
+> Task :feature:onboarding:processDebugManifest UP-TO-DATE
+> Task :feature:settings:extractDeepLinksDebug UP-TO-DATE
+> Task :feature:settings:processDebugManifest UP-TO-DATE
+> Task :feature:sync:extractDeepLinksDebug UP-TO-DATE
+> Task :feature:sync:processDebugManifest UP-TO-DATE
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :core:crypto:compileDebugLibraryResources UP-TO-DATE
+> Task :core:crypto:parseDebugLocalResources UP-TO-DATE
+> Task :core:crypto:generateDebugRFile UP-TO-DATE
+> Task :core:database:compileDebugLibraryResources UP-TO-DATE
+> Task :core:database:parseDebugLocalResources UP-TO-DATE
+> Task :core:database:generateDebugRFile UP-TO-DATE
+> Task :core:identity:compileDebugLibraryResources UP-TO-DATE
+> Task :core:identity:parseDebugLocalResources UP-TO-DATE
+> Task :core:identity:generateDebugRFile UP-TO-DATE
+> Task :core:network:compileDebugLibraryResources UP-TO-DATE
+> Task :core:network:parseDebugLocalResources UP-TO-DATE
+> Task :core:network:generateDebugRFile UP-TO-DATE
+> Task :feature:onboarding:compileDebugLibraryResources UP-TO-DATE
+> Task :feature:onboarding:parseDebugLocalResources UP-TO-DATE
+> Task :feature:onboarding:generateDebugRFile UP-TO-DATE
+> Task :feature:settings:compileDebugLibraryResources UP-TO-DATE
+> Task :feature:settings:parseDebugLocalResources UP-TO-DATE
+> Task :feature:settings:generateDebugRFile UP-TO-DATE
+> Task :feature:sync:compileDebugLibraryResources UP-TO-DATE
+> Task :feature:sync:parseDebugLocalResources UP-TO-DATE
+> Task :feature:sync:generateDebugRFile UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :core:crypto:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:crypto:compileDebugKotlin UP-TO-DATE
+> Task :core:crypto:javaPreCompileDebug UP-TO-DATE
+> Task :core:crypto:compileDebugJavaWithJavac NO-SOURCE
+> Task :core:crypto:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :core:database:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:database:kaptGenerateStubsDebugKotlin UP-TO-DATE
+> Task :core:database:kaptDebugKotlin UP-TO-DATE
+> Task :core:identity:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:identity:javaPreCompileDebug UP-TO-DATE
+> Task :core:network:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:network:javaPreCompileDebug UP-TO-DATE
+> Task :feature:onboarding:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:onboarding:javaPreCompileDebug UP-TO-DATE
+> Task :feature:settings:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:settings:javaPreCompileDebug UP-TO-DATE
+> Task :feature:sync:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :feature:sync:javaPreCompileDebug UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :core:crypto:mergeDebugShaders UP-TO-DATE
+> Task :core:crypto:compileDebugShaders NO-SOURCE
+> Task :core:crypto:generateDebugAssets UP-TO-DATE
+> Task :core:crypto:packageDebugAssets UP-TO-DATE
+> Task :core:database:mergeDebugShaders UP-TO-DATE
+> Task :core:database:javaPreCompileDebug
+> Task :core:database:compileDebugShaders NO-SOURCE
+> Task :core:database:generateDebugAssets UP-TO-DATE
+> Task :core:database:packageDebugAssets UP-TO-DATE
+> Task :core:identity:mergeDebugShaders UP-TO-DATE
+> Task :core:identity:compileDebugShaders NO-SOURCE
+> Task :core:identity:generateDebugAssets UP-TO-DATE
+> Task :core:identity:packageDebugAssets UP-TO-DATE
+> Task :core:network:mergeDebugShaders UP-TO-DATE
+> Task :core:network:compileDebugShaders NO-SOURCE
+> Task :core:network:generateDebugAssets UP-TO-DATE
+> Task :core:network:packageDebugAssets UP-TO-DATE
+> Task :feature:onboarding:mergeDebugShaders UP-TO-DATE
+> Task :feature:onboarding:compileDebugShaders NO-SOURCE
+> Task :feature:onboarding:generateDebugAssets UP-TO-DATE
+> Task :feature:onboarding:packageDebugAssets UP-TO-DATE
+> Task :feature:settings:mergeDebugShaders UP-TO-DATE
+> Task :feature:settings:compileDebugShaders NO-SOURCE
+> Task :feature:settings:generateDebugAssets UP-TO-DATE
+> Task :feature:settings:packageDebugAssets UP-TO-DATE
+> Task :feature:sync:mergeDebugShaders UP-TO-DATE
+> Task :feature:sync:compileDebugShaders NO-SOURCE
+> Task :feature:sync:generateDebugAssets UP-TO-DATE
+> Task :feature:sync:packageDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :core:crypto:processDebugJavaRes UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :core:crypto:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:crypto:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:crypto:mergeDebugNativeLibs NO-SOURCE
+> Task :core:crypto:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :core:database:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:database:mergeDebugNativeLibs NO-SOURCE
+> Task :core:database:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :core:identity:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:identity:mergeDebugNativeLibs NO-SOURCE
+> Task :core:identity:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :core:network:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core:network:mergeDebugNativeLibs NO-SOURCE
+> Task :core:network:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :feature:onboarding:mergeDebugJniLibFolders UP-TO-DATE
+> Task :feature:onboarding:mergeDebugNativeLibs NO-SOURCE
+> Task :feature:onboarding:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :feature:settings:mergeDebugJniLibFolders UP-TO-DATE
+> Task :feature:settings:mergeDebugNativeLibs NO-SOURCE
+> Task :feature:settings:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :feature:sync:mergeDebugJniLibFolders UP-TO-DATE
+> Task :feature:sync:mergeDebugNativeLibs NO-SOURCE
+> Task :feature:sync:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :core:database:compileDebugKotlin
+> Task :app:mergeExtDexDebug
+
+> Task :core:database:compileDebugKotlin FAILED
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/ConversationRepository.kt:23:32 Unresolved reference 'getForConversation'.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/ConversationRepository.kt:23:67 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/ConversationRepository.kt:23:73 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/ConversationRepository.kt:24:13 Type mismatch: inferred type is 'kotlinx.coroutines.flow.Flow<R>', but 'kotlin.collections.List<com.phantomnet.core.database.model.Message>' was expected.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/ConversationRepository.kt:24:22 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/ConversationRepository.kt:24:26 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/ConversationRepository.kt:53:37 Unresolved reference 'getByIdSync'.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/ConversationRepository.kt:57:30 Unresolved reference 'updateSharedSecret'.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/ConversationRepository.kt:74:9 No parameter with name 'conversationId' found.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/RoomRepository.kt:8:28 Unresolved reference 'network'.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/RoomRepository.kt:9:28 Unresolved reference 'PhantomCore'.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/RoomRepository.kt:45:28 Unresolved reference 'PhantomCore'.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/RoomRepository.kt:48:9 Unresolved reference 'MailboxManager'.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/RoomRepository.kt:62:25 Unresolved reference 'upsert'.
+e: file:///Users/enayat/Documents/Anonymous%20Chat/android/core/database/src/main/kotlin/com/phantomnet/core/database/repository/RoomRepository.kt:83:33 Unresolved reference 'app'.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':core:database:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 5m 13s
+127 actionable tasks: 5 executed, 122 up-to-date

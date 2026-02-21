@@ -1,0 +1,19 @@
+<lint-module
+    format="1"
+    dir="/Users/enayat/Documents/Anonymous Chat/android/core/database"
+    name=":core:database"
+    type="LIBRARY"
+    maven="PhantomNet.core:database:unspecified"
+    agpVersion="8.8.0"
+    buildFolder="build"
+    bootClassPath="/usr/local/share/android-commandlinetools/platforms/android-34/android.jar:/usr/local/share/android-commandlinetools/build-tools/35.0.0/core-lambda-stubs.jar"
+    javaSourceLevel="1.8"
+    compileTarget="android-34"
+    neverShrinking="true">
+  <lintOptions
+      abortOnError="true"
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true"/>
+  <variant name="release"/>
+</lint-module>

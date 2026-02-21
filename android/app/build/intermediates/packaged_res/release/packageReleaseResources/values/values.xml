@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="backgroundColor">#0B0E11</color>
+    <color name="ic_launcher_background">#0B0E11</color>
+    <color name="primaryColor">#00E676</color>
+    <string name="app_name">Phantom Net</string>
+    <style name="Theme.PhantomNet" parent="Theme.Material3.DayNight.NoActionBar">
+        
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="android:statusBarColor">@color/backgroundColor</item>
+        <item name="android:windowBackground">@color/backgroundColor</item>
+    </style>
+</resources>

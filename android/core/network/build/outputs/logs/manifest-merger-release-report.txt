@@ -1,0 +1,16 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/enayat/Documents/Anonymous Chat/android/core/network/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest6721598652131393848.xml:2:13-83
+INJECTED from /Users/enayat/Documents/Anonymous Chat/android/core/network/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest6721598652131393848.xml:2:13-83
+	package
+		INJECTED from /Users/enayat/Documents/Anonymous Chat/android/core/network/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest6721598652131393848.xml
+	xmlns:android
+		ADDED from /Users/enayat/Documents/Anonymous Chat/android/core/network/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest6721598652131393848.xml:2:23-81
+uses-sdk
+INJECTED from /Users/enayat/Documents/Anonymous Chat/android/core/network/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest6721598652131393848.xml reason: use-sdk injection requested
+INJECTED from /Users/enayat/Documents/Anonymous Chat/android/core/network/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest6721598652131393848.xml
+INJECTED from /Users/enayat/Documents/Anonymous Chat/android/core/network/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest6721598652131393848.xml
+	android:targetSdkVersion
+		INJECTED from /Users/enayat/Documents/Anonymous Chat/android/core/network/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest6721598652131393848.xml
+	android:minSdkVersion
+		INJECTED from /Users/enayat/Documents/Anonymous Chat/android/core/network/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest6721598652131393848.xml
