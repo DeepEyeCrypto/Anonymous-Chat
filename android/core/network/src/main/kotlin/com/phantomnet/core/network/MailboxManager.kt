@@ -57,15 +57,25 @@ object MailboxManager {
     }
 
     /**
+     * Optional hook for routing messages via the Mixnet.
+     * Must be set by the app layer at startup (e.g. in PhantomApp.onCreate).
+     */
+    var mixnetSender: ((String) -> Unit)? = null
+
+    /**
      * Push an encrypted message to a peer's DHT mailbox.
      */
     fun postMessage(recipientFingerprint: String, encryptedPayload: String, useMixnet: Boolean = false) {
         if (useMixnet) {
-            // Phase 7: Route through the Untraceable Mixnet
-            com.phantomnet.core.PhantomCore.sendMixnetPacketSafe(
-                "mb:$recipientFingerprint|$encryptedPayload"
-            )
-            Log.i(TAG, "Message routed through Mixnet for mb:$recipientFingerprint")
+            // Route through Mixnet via registered hook (set by app layer to avoid circular deps)
+            val sender = mixnetSender
+            if (sender != null) {
+                sender("mb:$recipientFingerprint|$encryptedPayload")
+                Log.i(TAG, "Message routed through Mixnet for mb:$recipientFingerprint")
+            } else {
+                Log.w(TAG, "Mixnet sender not registered, falling back to direct DHT")
+                DhtService.putValue("mb:$recipientFingerprint", encryptedPayload)
+            }
         } else {
             // Direct DHT put
             DhtService.putValue("mb:$recipientFingerprint", encryptedPayload)

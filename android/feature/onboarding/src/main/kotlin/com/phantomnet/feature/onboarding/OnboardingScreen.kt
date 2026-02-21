@@ -1,7 +1,9 @@
+@file:OptIn(ExperimentalFoundationApi::class)
 package com.phantomnet.feature.onboarding
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -410,7 +412,7 @@ private fun IdentityCreationPage(
             OutlinedButton(
                 onClick = onImport,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                border = org.compose.foundation.BorderStroke(1.dp, Emerald),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Emerald),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Emerald)
             ) {

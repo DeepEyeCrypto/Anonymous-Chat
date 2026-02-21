@@ -56,6 +56,11 @@ class PhantomApp : Application() {
 
             startCoreServices()
             
+            // Wire MailboxManager mixnet hook (breaks circular dep core:network → app)
+            com.phantomnet.core.network.MailboxManager.mixnetSender = { payload ->
+                com.phantomnet.core.PhantomCore.sendMixnetPacketSafe(payload)
+            }
+            
             // Phase 2: Background Polling
             com.phantomnet.app.worker.DhtPollingWorker.schedule(this)
             // Phase 3: Ephemeral Purge

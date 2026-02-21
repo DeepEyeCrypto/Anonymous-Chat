@@ -6,6 +6,7 @@ import com.phantomnet.core.database.entity.ConversationEntity
 import com.phantomnet.core.database.entity.MessageEntity
 import com.phantomnet.core.identity.IdentityManager
 import com.phantomnet.core.crypto.SignalBridge
+import kotlinx.coroutines.flow.firstOrNull
 import java.util.UUID
 
 /**
@@ -24,10 +25,8 @@ object SecureMessagingProcessor {
 
             if (type == "HANDSHAKE_INIT_HYBRID") {
                 handleHybridHandshake(context, db, jsonObj)
-            } else if (type == "HANDSHAKE_INIT") {
-                handleX3dhHandshake(context, db, jsonObj)
             } else {
-                // Handle standard encrypted message
+                // Handle standard encrypted message (Double Ratchet)
                 handleEncryptedMessage(context, db, jsonObj)
             }
         } catch (e: Exception) {
@@ -129,7 +128,7 @@ object SecureMessagingProcessor {
         )
         db.messageDao().insert(message)
         
-        db.conversationDao().updateLastMessage(conv.id, plaintext, System.currentTimeMillis())
+        db.conversationDao().updateLastMessage(conv.id, plaintext, System.currentTimeMillis(), true)
         Log.i(TAG, "Decrypted message from $senderFp")
     }
 }

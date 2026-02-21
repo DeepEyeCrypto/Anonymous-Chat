@@ -8,6 +8,7 @@ import com.phantomnet.core.database.repository.ConversationRepository
 import com.phantomnet.core.identity.IdentityManager
 import com.phantomnet.core.network.MailboxManager
 import com.phantomnet.core.crypto.SignalBridge
+import android.util.Log
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 

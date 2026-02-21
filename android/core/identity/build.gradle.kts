@@ -34,4 +34,5 @@ dependencies {
 
     // Depends on database module for domain models and DB access
     implementation(project(":core:database"))
+    implementation(project(":core:crypto"))
 }

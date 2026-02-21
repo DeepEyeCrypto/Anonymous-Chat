@@ -20,7 +20,7 @@ class ConversationRepository(private val db: PhantomDatabase) {
     }
 
     fun getMessages(conversationId: String): Flow<List<Message>> {
-        return db.messageDao().getForConversation(conversationId).map { entities ->
+        return db.messageDao().getForContext(conversationId).map { entities ->
             entities.map { it.toDomain() }
         }
     }
@@ -71,7 +71,6 @@ class ConversationRepository(private val db: PhantomDatabase) {
 
     private fun MessageEntity.toDomain() = Message(
         id = id,
-        conversationId = conversationId,
         senderId = senderId,
         content = contentPlaintext,
         timestamp = timestamp,

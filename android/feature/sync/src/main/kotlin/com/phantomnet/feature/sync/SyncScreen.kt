@@ -32,6 +32,7 @@ private val Obsidian = Color(0xFF0B0E11)
 private val SurfaceCard = Color(0xFF1C1F26)
 private val TextGray = Color(0xFF8B949E)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SyncScreen(
     state: SyncUiState,

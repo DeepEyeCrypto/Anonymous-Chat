@@ -4,8 +4,13 @@ use jni::sys::jstring;
 use jni::JNIEnv;
 use log::LevelFilter;
 use phantom_mixnet::{Packet, TransportMode};
+use prost::Message;
 use std::sync::OnceLock;
 use tokio::sync::mpsc;
+
+pub mod pb {
+    include!(concat!(env!("OUT_DIR"), "/phantom.v1.rs"));
+}
 
 /// This is the main orchestration layer that ties all cryptographic
 /// and networking engines together for the Android client.

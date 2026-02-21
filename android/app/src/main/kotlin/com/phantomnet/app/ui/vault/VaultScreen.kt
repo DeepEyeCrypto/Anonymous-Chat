@@ -18,10 +18,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private val Emerald = Color(0xFF00E676)
-private val Obsidian = Color(0xFF0B0E11)
-private val TextGray = Color(0xFF8B949E)
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -31,6 +27,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.draw.clip
 import com.phantomnet.core.database.model.Persona
 import kotlinx.coroutines.flow.Flow
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+
+private val Emerald = Color(0xFF00E676)
+private val Obsidian = Color(0xFF0B0E11)
+private val TextGray = Color(0xFF8B949E)
 
 @Composable
 fun VaultScreen(

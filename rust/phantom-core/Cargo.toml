@@ -1,7 +1,8 @@
 [package]
 name = "phantom-core"
-version = "0.1.0"
+version = "2.0.0-alpha.3"
 edition = "2021"
+build = "build.rs"
 
 [dependencies]
 phantom-pqc = { path = "../phantom-pqc" }
@@ -20,3 +21,8 @@ log = "0.4"
 android_logger = "0.13"
 hex = "0.4"
 serde = { version = "1.0", features = ["derive"] }
+prost = "0.12"
+bytes = "1.5"
+
+[build-dependencies]
+prost-build = "0.12"

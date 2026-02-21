@@ -46,7 +46,9 @@ class RoomViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             // For MVP, myId is hardcoded to 0. 
             // Real apps would have participants perform a handshake to determine IDs 0..N-1
-            repo.sendDcNetMessage(roomId, 0, text)
+            val contribution = PhantomCore.computeDcNetContributionSafe(0, text)
+            MailboxManager.postRoomContribution(roomId, 0, contribution)
+            repo.insertSentMessage(roomId, text)
         }
     }
 
@@ -64,15 +66,7 @@ class RoomViewModel(application: Application) : AndroidViewModel(application) {
                 
                 if (revealed.isNotBlank() && revealed.startsWith("HELLO")) {
                     // Valid protocol message revealed!
-                    repository?.insertMessage(Message(
-                        id = java.util.UUID.randomUUID().toString(),
-                        conversationId = roomId,
-                        senderId = "ANONYMOUS",
-                        content = revealed,
-                        timestamp = System.currentTimeMillis(),
-                        isMe = false,
-                        status = "REVEALED"
-                    ))
+                    repository?.insertRevealedMessage(roomId, revealed)
                 }
             }
         }

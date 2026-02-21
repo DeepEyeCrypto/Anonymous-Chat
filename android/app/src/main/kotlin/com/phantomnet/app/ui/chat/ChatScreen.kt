@@ -17,6 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.phantomnet.core.database.model.Message
+import com.phantomnet.app.ui.theme.DarkBackground
+import com.phantomnet.app.ui.theme.HackerGreen
 import com.phantomnet.app.ui.call.CallOrchestratorScreen
 import com.phantomnet.app.ui.call.PreCallPrivacyPanel
 import com.phantomnet.app.ui.call.PrivacyMode

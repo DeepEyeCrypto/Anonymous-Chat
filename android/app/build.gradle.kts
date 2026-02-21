@@ -12,8 +12,8 @@ android {
         applicationId = "com.phantomnet.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 8
-        versionName = "2.0.0-alpha.1"
+        versionCode = 10
+        versionName = "2.0.0-alpha.3"
             
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

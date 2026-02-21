@@ -4,10 +4,17 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.phantomnet.core.database.dao.ConversationDao
 import com.phantomnet.core.database.dao.RoomDao
 import com.phantomnet.core.database.dao.CallLogDao
+import com.phantomnet.core.database.dao.MessageDao
+import com.phantomnet.core.database.dao.PersonaDao
+import com.phantomnet.core.database.entity.ConversationEntity
+import com.phantomnet.core.database.entity.MessageEntity
+import com.phantomnet.core.database.entity.PersonaEntity
 import com.phantomnet.core.database.entity.RoomEntity
 import com.phantomnet.core.database.entity.CallLogEntity
+import net.sqlcipher.database.SupportFactory
 
 @Database(
     entities = [

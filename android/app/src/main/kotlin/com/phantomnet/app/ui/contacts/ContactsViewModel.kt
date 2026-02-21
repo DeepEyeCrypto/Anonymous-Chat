@@ -48,7 +48,7 @@ class ContactsViewModel(application: Application) : AndroidViewModel(application
             
             // Encrypt for the peer (using SignalBridge)
             try {
-                val encrypted = SignalBridge.encryptMessageSafe(handshakeMsg, contactKey)
+                val encrypted = SignalBridge.encryptWithKeySafe(handshakeMsg, contactKey)
                 MailboxManager.postMessage(contactFingerprint, encrypted)
             } catch (e: Exception) {
                 // Fallback to plain for demo if native fails

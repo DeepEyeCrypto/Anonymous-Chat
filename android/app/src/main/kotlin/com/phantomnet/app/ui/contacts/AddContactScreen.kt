@@ -99,7 +99,8 @@ fun AddContactScreen(
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
                 cursorColor = Emerald,
-                containerColor = SurfaceCard
+                focusedContainerColor = SurfaceCard,
+                unfocusedContainerColor = SurfaceCard
             ),
             shape = RoundedCornerShape(16.dp)
         )

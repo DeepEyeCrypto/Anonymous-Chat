@@ -5,8 +5,7 @@ import com.phantomnet.core.database.entity.RoomEntity
 import com.phantomnet.core.database.entity.MessageEntity
 import com.phantomnet.core.database.model.Room
 import com.phantomnet.core.database.model.Message
-import com.phantomnet.core.network.MailboxManager
-import com.phantomnet.core.PhantomCore
+import com.phantomnet.core.database.model.MessageStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.UUID
@@ -40,14 +39,7 @@ class RoomRepository(private val db: PhantomDatabase) {
         return room
     }
 
-    suspend fun sendDcNetMessage(roomId: String, myParticipantId: Int, text: String): String {
-        // 1. Compute local contribution
-        val contribution = PhantomCore.computeDcNetContributionSafe(myParticipantId, text)
-        
-        // 2. Post to DHT
-        MailboxManager.postRoomContribution(roomId, myParticipantId, contribution)
-        
-        // 3. Save to local DB (pending)
+    suspend fun insertSentMessage(roomId: String, text: String) {
         val message = MessageEntity(
             id = UUID.randomUUID().toString(),
             conversationId = roomId,
@@ -59,9 +51,22 @@ class RoomRepository(private val db: PhantomDatabase) {
             status = "SENT",
             expiresAt = System.currentTimeMillis() + 86400000 // 24h TTL
         )
-        db.messageDao().upsert(message)
-        
-        return contribution
+        db.messageDao().insert(message)
+    }
+
+    suspend fun insertRevealedMessage(roomId: String, text: String) {
+        val message = MessageEntity(
+            id = UUID.randomUUID().toString(),
+            conversationId = roomId,
+            senderId = "ANONYMOUS",
+            contentPlaintext = text,
+            contentCiphertext = null,
+            timestamp = System.currentTimeMillis(),
+            isMe = false,
+            status = "DELIVERED",
+            expiresAt = System.currentTimeMillis() + 86400000 // 24h TTL
+        )
+        db.messageDao().insert(message)
     }
 
     private fun RoomEntity.toModel() = Room(
@@ -80,6 +85,6 @@ class RoomRepository(private val db: PhantomDatabase) {
         content = contentPlaintext,
         timestamp = timestamp,
         isMe = isMe,
-        status = com.phantomnet.app.domain.model.MessageStatus.valueOf(status)
+        status = MessageStatus.valueOf(status)
     )
 }

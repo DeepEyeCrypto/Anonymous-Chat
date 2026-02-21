@@ -58,6 +58,15 @@ interface ConversationDao {
 
     @Query("DELETE FROM conversations")
     suspend fun deleteAll()
+
+    @Query("SELECT * FROM conversations WHERE contactFingerprint = :fp LIMIT 1")
+    suspend fun getByFingerprint(fp: String): ConversationEntity?
+
+    @Query("SELECT * FROM conversations WHERE id = :id LIMIT 1")
+    suspend fun getByIdSync(id: String): ConversationEntity?
+
+    @Query("UPDATE conversations SET sharedSecret = :secret WHERE id = :id")
+    suspend fun updateSharedSecret(id: String, secret: ByteArray)
 }
 
 @Dao
