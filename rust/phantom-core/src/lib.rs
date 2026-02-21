@@ -4,7 +4,6 @@ use jni::sys::jstring;
 use jni::JNIEnv;
 use log::LevelFilter;
 use phantom_mixnet::{Packet, TransportMode};
-use prost::Message;
 use std::sync::OnceLock;
 use tokio::sync::mpsc;
 
