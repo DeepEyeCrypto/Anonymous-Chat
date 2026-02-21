@@ -1,9 +1,7 @@
 package com.phantomnet.feature.sync
 
 import android.Manifest
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
+import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -30,6 +28,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
 
@@ -72,7 +71,10 @@ fun SyncScreen(
             onPermissionResult(true)
         } else if (state.isPermissionRequested) {
             // User was asked but denied - check if we should show rationale
-            val shouldShowRationale = context.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)
+            val activity = context as? Activity
+            val shouldShowRationale = activity?.let {
+                ActivityCompat.shouldShowRequestPermissionRationale(it, Manifest.permission.CAMERA)
+            } ?: false
             if (!shouldShowRationale) {
                 // Permission was denied permanently
                 onPermissionPermanentlyDenied()
