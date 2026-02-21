@@ -2,25 +2,25 @@
 /target
 /Cargo.lock
 
-# Android
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-*/build
+# Android/Gradle
+.gradle/
+build/
+*/build/
+capture/
+local.properties
+.idea/
 *.iml
 *.ap_
 *.apk
 *.dex
+android/gradle-8.7/
+android/gradle-8.7-bin.zip
+android/gradle/
+!android/gradle/wrapper/
 
 # JNI LIBS (Generated)
-android/app/src/main/jniLibs
+android/app/src/main/jniLibs/
 
 # OS
 .DS_Store
+Thumbs.db
